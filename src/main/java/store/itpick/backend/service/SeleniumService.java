@@ -292,7 +292,6 @@ public class SeleniumService {
         List<Keyword> keywordsToSave = new ArrayList<>();
         int size = Math.min(keywordList.size(), linksList.size());
 
-
         for (int i = 0; i < size; i++) {
             String keywordContent = keywordList.get(i);
             Keyword keyword = new Keyword();
@@ -307,16 +306,17 @@ public class SeleniumService {
         referenceService.saveAll(references);
 
         // 4. CommunityPeriod 객체 생성 및 저장
-        CommunityPeriod communityPeriod = new CommunityPeriod();
-        communityPeriod.setCommunity(communityName);
-        communityPeriod.setPeriod("realtime");
+        CommunityPeriod finalCommunityPeriod; // 최종적으로 사용될 CommunityPeriod 객체 선언
 
         try {
             Optional<CommunityPeriod> existingCommunityPeriodOptional = communityPeriodService.findByCommunityAndPeriod(communityName, "realtime");
             if (existingCommunityPeriodOptional.isPresent()) {
-                communityPeriod = existingCommunityPeriodOptional.get();
+                finalCommunityPeriod = existingCommunityPeriodOptional.get();
             } else {
-                communityPeriodService.save(communityPeriod);
+                CommunityPeriod newCommunityPeriod = new CommunityPeriod();
+                newCommunityPeriod.setCommunity(communityName);
+                newCommunityPeriod.setPeriod("realtime");
+                finalCommunityPeriod = communityPeriodService.save(newCommunityPeriod);
             }
         } catch (DataIntegrityViolationException e) {
             log.error("CommunityPeriod 저장 중 예외 발생: " + e.getMessage());
@@ -326,42 +326,35 @@ public class SeleniumService {
         // 1. 키워드 존재 여부에 따라 구분
         for (int i = 0; i < size; i++) {
             Reference reference = references.get(i);
-
-
             String keywordContent = keywordList.get(i);
             Optional<Keyword> existingKeywordOptional = keywordService.findByKeyword(keywordContent);
 
-
             if (existingKeywordOptional.isPresent()) {
-                //중복되는 키워드가 있는 경우 reference 만 업데이트 해줌
+                // 중복되는 키워드가 있는 경우 reference만 업데이트
                 Keyword existingKeyword = existingKeywordOptional.get();
                 existingKeyword.setReference(reference);
 
-                keywordsToUpdate.add(existingKeyword); // 기존 키워드를 업데이트 대상으로 추가
+                // 중복되는 CommunityPeriod가 이미 존재하는지 확인
+                boolean isCommunityPeriodAlreadyAdded = existingKeyword.getCommunityPeriods().stream()
+                        .anyMatch(cp -> cp.getCommunity().equals(finalCommunityPeriod.getCommunity())
+                                && cp.getPeriod().equals(finalCommunityPeriod.getPeriod()));
+
+                if (!isCommunityPeriodAlreadyAdded) {
+                    // 중복되지 않는 경우에만 CommunityPeriod 추가
+                    existingKeyword.getCommunityPeriods().add(finalCommunityPeriod);
+                }
+
+                // 기존 키워드를 업데이트 대상으로 추가
+                keywordsToUpdate.add(existingKeyword);
             } else {
                 //중복되는 키워드가 없는 경우
-                Keyword keyword= new Keyword();
+                Keyword keyword = new Keyword();
                 keyword.setKeyword(keywordContent);
                 keyword.setReference(reference);
-                keyword.getCommunityPeriods().add(communityPeriod); // CommunityPeriod 추가
+                keyword.getCommunityPeriods().add(finalCommunityPeriod); // CommunityPeriod 추가
                 keywordsToSave.add(keyword); // 새로운 키워드를 저장 대상으로 추가
             }
         }
-
-
-
-
-
-
-
-////        // 5. 키워드에 참조 설정 및 기존 키워드 업데이트
-//        for (int i = 0; i < keywordsToSave.size(); i++) {
-//            Keyword keyword = keywordsToSave.get(i);
-//            Reference reference = references.get(i);
-//            keyword.setReference(reference);
-//            keyword.getCommunityPeriods().add(communityPeriod); // CommunityPeriod 추가
-//        }
-
 
         try {
             // 모든 키워드와 커뮤니티 기간 저장
@@ -369,12 +362,13 @@ public class SeleniumService {
             for (Keyword keyword : keywordsToUpdate) {
                 keywordService.save(keyword); // 기존 키워드 업데이트
             }
-            communityPeriodService.save(communityPeriod);
+            communityPeriodService.save(finalCommunityPeriod);
         } catch (DataIntegrityViolationException e) {
             log.error("중복된 키워드가 존재합니다: " + e.getMessage());
             throw new RuntimeException("중복된 키워드가 존재합니다.", e);
         }
     }
+
 
 
 
@@ -425,7 +419,6 @@ public class SeleniumService {
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
         System.out.println(ul.getText());
 
-        quitDriver();
         return null;
     }
 
