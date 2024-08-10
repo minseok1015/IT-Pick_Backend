@@ -60,7 +60,8 @@ public class SchedulerService {
 
 
     // 매 시간마다 실행하는 작업
-    @Scheduled(cron = "0 0,15,30,45 * * * *")
+    @Transactional
+    @Scheduled(cron = "0 0,15,20,30,45 * * * *")
     public void performScheduledTasks() {
         log.info("Starting scheduled tasks...");
         if (isDailyTaskTime()) {
@@ -77,7 +78,7 @@ public class SchedulerService {
     private boolean isDailyTaskTime() {
         LocalTime now = LocalTime.now();
 //        return now.getHour() == 11 && now.getMinute() == 15;
-        return now.getMinute() == 45;
+        return now.getMinute() == 5;
     }
 
     private boolean isMonday() {
@@ -85,11 +86,12 @@ public class SchedulerService {
     }
 
     // 시간별 크롤링 작업
-    private void performHourlyTasks() {
+    @Transactional
+    public void performHourlyTasks() {
         try {
             executeWithRetries(() -> seleniumService.useDriverForNaver("https://www.signal.bz/"), "Naver 데이터 수집");
             executeWithRetries(() -> seleniumService.useDriverForMnate("https://m.nate.com/"), "Nate 데이터 수집");
-            executeWithRetries(() -> seleniumService.useDriverForMnate("https://news.zum.com/"), "Zum 데이터 수집");
+            executeWithRetries(() -> seleniumService.useDriverForZum("https://news.zum.com/"), "Zum 데이터 수집");
 
             /** 일간 통합 랭킹 저장 **/
             redis.saveTotalRanking(PeriodType.BY_REAL_TIME);
@@ -101,7 +103,8 @@ public class SchedulerService {
     }
 
     // 18시에 실행하는 Daily 작업
-    private void performDailyTasks() {
+    @Transactional
+    public void performDailyTasks() {
         log.info("Starting scheduled tasks...performing DailyTask");
         performHourlyTasks(); // 매일 18시에 hourlyTask를 포함
 
@@ -121,7 +124,8 @@ public class SchedulerService {
     }
 
     // 매주 월요일 18시에 실행하는 Weekly 작업
-    private void performWeeklyTasks() {
+    @Transactional
+    public void performWeeklyTasks() {
         log.info("Starting weekly task...");
         /**
          * Redis에서 주간 랭킹 계산, 생성
