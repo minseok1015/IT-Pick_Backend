@@ -60,7 +60,7 @@ public class SchedulerService {
 
 
     // 매 시간마다 실행하는 작업
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 15 * * * *")
     public void performScheduledTasks() {
         log.info("Starting scheduled tasks...");
         if (isDailyTaskTime()) {
@@ -76,7 +76,7 @@ public class SchedulerService {
 
     private boolean isDailyTaskTime() {
         LocalTime now = LocalTime.now();
-        return now.getHour() == 11 && now.getMinute() == 10;
+        return now.getHour() == 11 && now.getMinute() == 15;
     }
 
     private boolean isMonday() {
