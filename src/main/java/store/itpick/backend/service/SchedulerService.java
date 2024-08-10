@@ -88,7 +88,7 @@ public class SchedulerService {
         try {
             executeWithRetries(() -> seleniumService.useDriverForNaver("https://www.signal.bz/"), "Naver 데이터 수집");
             executeWithRetries(() -> seleniumService.useDriverForMnate("https://m.nate.com/"), "Nate 데이터 수집");
-//            executeWithRetries(() -> seleniumService.useDriverForMnate("https://zum.com/"), "Zum 데이터 수집");
+            executeWithRetries(() -> seleniumService.useDriverForMnate("https://news.zum.com/"), "Zum 데이터 수집");
 
             /** 일간 통합 랭킹 저장 **/
             redis.saveTotalRanking(PeriodType.BY_REAL_TIME);
@@ -117,7 +117,7 @@ public class SchedulerService {
         /** DB에 있는 18시 검색어들을 Daily검색어로 Reference 참조할 수 있도록 함 **/
         keywordService.performDailyTasksNate();
         keywordService.performDailyTasksNaver();
-//        keywordService.performDailyTasksZum();
+        keywordService.performDailyTasksZum();
         log.info("Scheduled tasks completed DailyTask.");
     }
 
