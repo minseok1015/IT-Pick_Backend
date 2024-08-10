@@ -23,48 +23,48 @@ public class RankService {
     private CommunityPeriodRepository communityPeriodRepository;
 
     public RankResponseDTO getReferenceByKeyword(String community, String period, String keyword) {
-        List<String> communitiesToCheck;
-        if ("total".equals(community)) {
-            communitiesToCheck = List.of("naver", "zum", "nate");
-        } else {
-            communitiesToCheck = List.of(community);
-        }
+        List<String> communitiesToCheck = "total".equals(community)
+                ? List.of("naver", "zum", "nate")
+                : List.of(community);
 
         for (String comm : communitiesToCheck) {
-            // CommunityPeriod를 찾기
-            Optional<CommunityPeriod> communityPeriodOptional = communityPeriodRepository.findByCommunityAndPeriod(comm, period);
+            Optional<Keyword> keywordOptional;
 
-            if (communityPeriodOptional.isPresent()) {
-                CommunityPeriod communityPeriod = communityPeriodOptional.get();
+            if ("weekly".equals(period)) {
+                // weekly 기간에 대한 처리
+                keywordOptional = keywordRepository.findTop1ByKeywordAndCommunityOrderByUpdatedAtDesc(keyword, comm);
+            } else {
+                // 다른 기간에 대한 처리
+                Optional<CommunityPeriod> communityPeriodOptional = communityPeriodRepository.findByCommunityAndPeriod(comm, period);
 
-                // CommunityPeriod에 연결된 키워드 찾기
-                List<Keyword> keywords = keywordRepository.findByCommunityPeriods(communityPeriod);
-
-                // 주어진 키워드가 있는지 확인
-                Keyword keywordEntity = keywords.stream()
-                        .filter(k -> k.getKeyword().equals(keyword))
-                        .findFirst()
-                        .orElse(null);
-
-                if (keywordEntity != null) {
-                    Reference reference = keywordEntity.getReference();
-
-                    // DTO 생성
-                    RankResponseDTO response = new RankResponseDTO();
-                    response.setKeyword(keywordEntity.getKeyword());
-                    response.setSearchLink(reference.getSearchLink());
-                    response.setNewsTitle(reference.getNewsTitle());
-                    response.setImageUrl(reference.getNewsImage());
-                    response.setNewsContent(reference.getNewsContent());
-                    response.setNewsLink(reference.getNewsLink());
-
-                    return response;
+                if (communityPeriodOptional.isPresent()) {
+                    CommunityPeriod communityPeriod = communityPeriodOptional.get();
+                    keywordOptional = keywordRepository.findTop1ByKeywordAndCommunityOrderByUpdatedAtDesc(keyword, comm);
+                } else {
+                    continue;
                 }
+            }
+
+            if (keywordOptional.isPresent()) {
+                Keyword latestKeyword = keywordOptional.get();
+                Reference reference = latestKeyword.getReference();
+
+                RankResponseDTO response = new RankResponseDTO();
+                response.setKeyword(latestKeyword.getKeyword());
+                response.setSearchLink(reference.getSearchLink());
+                response.setNewsTitle(reference.getNewsTitle());
+                response.setImageUrl(reference.getNewsImage());
+                response.setNewsContent(reference.getNewsContent());
+                response.setNewsLink(reference.getNewsLink());
+
+                return response;
             }
         }
 
-        // 키워드가 없거나 커뮤니티/기간이 없을 경우 null 반환 또는 예외 처리
         return null;
     }
+
+
+
 
 }

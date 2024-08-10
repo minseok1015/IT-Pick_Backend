@@ -76,7 +76,7 @@ public class SchedulerService {
 
     private boolean isDailyTaskTime() {
         LocalTime now = LocalTime.now();
-        return now.getHour() == 18 && now.getMinute() == 0;
+        return now.getHour() == 11 && now.getMinute() == 10;
     }
 
     private boolean isMonday() {
@@ -96,8 +96,6 @@ public class SchedulerService {
 
         } catch (Exception e) {
             log.error("Error during hourly task", e);
-        } finally {
-            seleniumService.quitDriver();  // 작업 후 드라이버 종료
         }
     }
 

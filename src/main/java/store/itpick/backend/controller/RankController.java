@@ -118,6 +118,11 @@ public class RankController {
         keywordService.performDailyTasksNate();
     }
 
+    @GetMapping("/update/zum")
+    public void updateZum(){
+        keywordService.performDailyTasksZum();
+    }
+
     @GetMapping("/naver")
     public List<Reference> getRankFromSignal() {
         String url = "https://www.signal.bz/";
