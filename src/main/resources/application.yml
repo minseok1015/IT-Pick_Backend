@@ -18,7 +18,7 @@ spring:
       on-profile: "localDB"
 
   datasource:
-    url: ${DATASOURCE_URL}
+    url: ${DATASOURCE_URL}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
 #    url: jdbc:h2:tcp://localhost/~/itpick
@@ -64,7 +64,7 @@ spring:
       on-profile: "devDB"
 
   datasource:
-    url: ${DATASOURCE_URL_DEV}
+    url: ${DATASOURCE_URL_DEV}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -89,7 +89,7 @@ spring:
       on-profile: "prodDB"
 
   datasource:
-    url: ${DATASOURCE_URL_PROD}
+    url: ${DATASOURCE_URL_PROD}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
