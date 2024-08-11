@@ -3,7 +3,7 @@ package store.itpick.backend.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jsoup.Connection;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.response.BaseResponse;
-import store.itpick.backend.dto.debate.PostDebateRequest;
-import store.itpick.backend.dto.debate.PostDebateResponse;
+import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.service.DebateService;
 
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_DEBATE_VALUE;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
 import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 
 @Slf4j
@@ -24,7 +23,6 @@ import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 @RequestMapping("/debate")
 public class DebateController {
 
-    @Autowired
     private final DebateService debateService;
 
     @PostMapping("")
@@ -33,7 +31,26 @@ public class DebateController {
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_DEBATE_VALUE, getErrorMessages(bindingResult));
         }
+
         return new BaseResponse<>(debateService.createDebate(postDebateRequest));
     }
 
+    @PostMapping("/comment")
+    public BaseResponse<PostCommentResponse> createComment(@Valid @RequestBody PostCommentRequest postCommentRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new DebateException(INVALID_COMMENT_VALUE, getErrorMessages(bindingResult));
+        }
+
+        return new BaseResponse<>(debateService.createComment(postCommentRequest));
+    }
+
+    @PostMapping("/comment/heart")
+    public BaseResponse<PostCommentHeartResponse> creatCommentHeart(@Valid @RequestBody PostCommentHeartRequest postCommentHeartRequest, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            throw new DebateException(INVALID_COMMENT_HEART_VALUE, getErrorMessages(bindingResult));
+        }
+
+        return new BaseResponse<>(debateService.creatCommentHeart(postCommentHeartRequest));
+    }
 }
