@@ -9,14 +9,8 @@ import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.jwt.JwtProvider;
-import store.itpick.backend.model.Comment;
-import store.itpick.backend.model.CommentHeart;
-import store.itpick.backend.model.Debate;
-import store.itpick.backend.model.User;
-import store.itpick.backend.repository.CommentHeartRepository;
-import store.itpick.backend.repository.CommentRepository;
-import store.itpick.backend.repository.DebateRepository;
-import store.itpick.backend.repository.UserRepository;
+import store.itpick.backend.model.*;
+import store.itpick.backend.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -30,6 +24,7 @@ import static store.itpick.backend.common.response.status.BaseExceptionResponseS
 @RequiredArgsConstructor
 public class DebateService {
 
+    private final KeywordRepository keywordRepository;
     private final DebateRepository debateRepository;
     private final CommentRepository commentRepository;
     private final CommentHeartRepository commentHeartRepository;
@@ -38,7 +33,11 @@ public class DebateService {
 
     @Transactional
     public PostDebateResponse createDebate(PostDebateRequest postDebateRequest) {
-        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).build();
+
+        Keyword keyword = keywordRepository.findById(postDebateRequest.getKeywordId())
+                .orElseThrow(() -> new DebateException(KEYWORD_NOT_FOUND));
+
+        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).build();
 
         debate = debateRepository.save(debate);
 

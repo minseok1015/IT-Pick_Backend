@@ -46,4 +46,8 @@ public class Debate {
 
     @OneToMany(mappedBy = "debate")
     private List<Comment> comment;
+
+    @ManyToOne
+    @JoinColumn(name = "keyword_id", nullable = false)
+    private Keyword keyword;
 }
