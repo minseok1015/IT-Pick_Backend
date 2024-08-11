@@ -15,9 +15,8 @@ import store.itpick.backend.dto.rank.RankResponseDTO;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.dto.rank.RankResponseDTO;
 import store.itpick.backend.model.Reference;
+import store.itpick.backend.service.*;
 import store.itpick.backend.util.Redis;
-import store.itpick.backend.service.RankService;
-import store.itpick.backend.service.SeleniumService;
 import store.itpick.backend.service.RankService;
 import store.itpick.backend.service.SeleniumService;
 
@@ -45,9 +44,16 @@ public class RankController {
     @Autowired
     private Redis redis;
 
+    @Autowired
+    private KeywordService keywordService;
+
+    @Autowired
+    private SchedulerService schedulerService;
+
+
 
     // 최대 재시도 횟수와 재시도 간격 (초)
-    private static final int MAX_RETRIES = 1;
+    private static final int MAX_RETRIES = 5;
     private static final int RETRY_DELAY_SECONDS = 5;
 
     // 재시도 로직을 포함한 함수
@@ -77,7 +83,7 @@ public class RankController {
 
     @GetMapping("/zum")
     public List<Reference> getRankFromZum() {
-        String url = "https://zum.com/";
+        String url = "https://news.zum.com/";
         return executeWithRetries(() -> seleniumService.useDriverForZum(url), "Zum 데이터 수집");
     }
 
@@ -91,9 +97,39 @@ public class RankController {
 
 
     @GetMapping("/reference")
-    public BaseResponse<RankResponseDTO> getRank(@RequestParam String key, @RequestParam String keyword) {
-        RankResponseDTO rankResponse = rankService.getReferenceByKeyword(key, keyword);
+    public BaseResponse<RankResponseDTO> getReference(
+            @RequestParam String community,
+            @RequestParam String period,
+            @RequestParam String keyword) {
+
+        RankResponseDTO rankResponse = rankService.getReferenceByKeyword(community, period, keyword);
+
+        if (rankResponse == null) {
+            // 키워드가 없거나 커뮤니티/기간이 없을 경우 적절한 응답 처리
+            return new BaseResponse<>(null);
+        }
+
         return new BaseResponse<>(rankResponse);
+    }
+
+    @GetMapping("/update/naver")
+    public void getUpdate(){
+        keywordService.performDailyTasksNaver();
+    }
+
+    @GetMapping("/update/nate")
+    public void updateNate(){
+        keywordService.performDailyTasksNate();
+    }
+
+    @GetMapping("/update/zum")
+    public void updateZum(){
+        keywordService.performDailyTasksZum();
+    }
+
+    @GetMapping("/update")
+    public void update(){
+        schedulerService.performHourlyTasks();
     }
 
     @GetMapping("/naver")
