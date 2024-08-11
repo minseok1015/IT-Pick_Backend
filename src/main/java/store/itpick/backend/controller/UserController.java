@@ -38,7 +38,7 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
-
+    /*
     @PatchMapping("/birth-date")
     public BaseResponse<?> changeBrithDate(@PreAuthorize long userId, @Validated @RequestBody BirthDateRequest birthDateRequest, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
@@ -47,6 +47,8 @@ public class UserController {
         userService.changeBirthDate(userId, birthDateRequest.getBirth_date());
         return new BaseResponse<>(null);
     }
+
+     */
 
     @PatchMapping("/liked-topics")
     public BaseResponse<?> changeLikedTopics(@PreAuthorize long userId, @Validated @RequestBody LikedTopicsRequest likedTopicsRequest, BindingResult bindingResult){
@@ -58,6 +60,7 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
+    /*
     @PatchMapping("/email")
     public BaseResponse<?> changeEmail(@PreAuthorize long userId, @Validated @RequestBody EmailRequest emailRequest, BindingResult bindingResult, @PreAccessToken String AccessToken){
         if (bindingResult.hasErrors()) {
@@ -65,6 +68,7 @@ public class UserController {
         }
         return new BaseResponse<>(userService.changeEmail(userId, emailRequest.getEmail(), AccessToken, emailRequest.getRefreshToken()));
     }
+     */
 
     @PatchMapping("/password")
     public BaseResponse<?> changePassword(@PreAuthorize long userId, @Validated @RequestBody PasswordRequest passwordRequest, BindingResult bindingResult){
