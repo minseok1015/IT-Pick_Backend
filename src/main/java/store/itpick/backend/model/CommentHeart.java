@@ -30,7 +30,7 @@ public class CommentHeart {
     @Column(name = "update_at")
     private Timestamp updateAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

@@ -10,8 +10,10 @@ import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.Comment;
+import store.itpick.backend.model.CommentHeart;
 import store.itpick.backend.model.Debate;
 import store.itpick.backend.model.User;
+import store.itpick.backend.repository.CommentHeartRepository;
 import store.itpick.backend.repository.CommentRepository;
 import store.itpick.backend.repository.DebateRepository;
 import store.itpick.backend.repository.UserRepository;
@@ -30,6 +32,7 @@ public class DebateService {
 
     private final DebateRepository debateRepository;
     private final CommentRepository commentRepository;
+    private final CommentHeartRepository commentHeartRepository;
     private final UserRepository userRepository;
     private final VoteService voteService;
 
@@ -64,7 +67,7 @@ public class DebateService {
             Optional<Comment> parentCommentOptional = commentRepository.findById(postCommentRequest.getParentCommentId());
             if (parentCommentOptional.isPresent()) {
                 parentComment = parentCommentOptional.get();
-            }else throw new DebateException(COMMENT_NOT_FOUND);
+            } else throw new DebateException(COMMENT_PARENT_NOT_FOUND);
         }
 
         Optional<User> userOptional = userRepository.findById(postCommentRequest.getUserId());
@@ -80,4 +83,38 @@ public class DebateService {
         return new PostCommentResponse(comment.getCommentId());
     }
 
+    @Transactional
+    public PostCommentHeartResponse creatCommentHeart(PostCommentHeartRequest postCommentHeartRequest) {
+
+        Optional<User> userOptional = userRepository.findById(postCommentHeartRequest.getUserId());
+        if (!userOptional.isPresent()) {
+            throw new UserException(USER_NOT_FOUND);
+        }
+
+        Optional<Comment> commentOptional = commentRepository.findById(postCommentHeartRequest.getCommentId());
+        if (!commentOptional.isPresent()) {
+            throw new DebateException(COMMENT_NOT_FOUND);
+        }
+
+        CommentHeart existingCommentHeart = commentHeartRepository.findByUserAndComment(userOptional.get(), commentOptional.get());
+
+        if (existingCommentHeart != null) {
+            Long deletedCommentHeartId = existingCommentHeart.getCommentHeartId();
+            commentHeartRepository.delete(existingCommentHeart);
+            return PostCommentHeartResponse.builder()
+                    .commentHeartId(deletedCommentHeartId)
+                    .build();
+        } else {
+            // 존재하지 않으면 새로운 CommentHeart 생성 및 저장
+            CommentHeart commentHeart = CommentHeart.builder()
+                    .user(userOptional.get())
+                    .comment(commentOptional.get())
+                    .status("active")
+                    .createAt(Timestamp.valueOf(LocalDateTime.now()))
+                    .build();
+
+            commentHeartRepository.save(commentHeart);
+            return new PostCommentHeartResponse(commentHeart.getCommentHeartId());
+        }
+    }
 }
