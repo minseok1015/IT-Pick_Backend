@@ -63,4 +63,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<CommentHeart> commentHearts;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserVoteChoice> userVoteChoices;
 }

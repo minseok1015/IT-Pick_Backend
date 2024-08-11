@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "vote_option")
@@ -37,4 +38,7 @@ public class VoteOption {
     @ManyToOne
     @JoinColumn(name = "vote_id", nullable = false)
     private Vote vote;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserVoteChoice> userVoteChoices;
 }
