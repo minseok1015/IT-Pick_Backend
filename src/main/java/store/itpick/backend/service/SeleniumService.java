@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import store.itpick.backend.common.exception.ReferenceException;
 import store.itpick.backend.model.*;
 import store.itpick.backend.repository.KeywordRepository;
 import store.itpick.backend.service.KeywordService;
@@ -37,6 +38,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.EMPTY_REFERENCE;
 
 @Slf4j
 @Component
@@ -236,8 +239,13 @@ public class SeleniumService {
 
                 String newsLink = webElement.findElement(By.cssSelector(".news_tit")).getAttribute("href");
 
-                String imageUrl = webElement.findElement(By.cssSelector(".thumb")). getAttribute("src");
-
+                String imageUrl = "";
+                try {
+                    imageUrl = webElement.findElement(By.cssSelector(".thumb")).getAttribute("src");
+                } catch (NoSuchElementException e) {
+                    log.warn("이미지 요소를 찾을 수 없습니다.", e);
+                    imageUrl = "No Image"; // 이미지가 없는 경우의 기본값 설정
+                }
 
                 long startTime = System.currentTimeMillis(); // 시작 시간 기록
                 while (imageUrl.equals(emptyImg)){
@@ -368,6 +376,8 @@ public class SeleniumService {
             throw new RuntimeException("중복된 키워드가 존재합니다.", e);
         }
     }
+
+
 
 
 

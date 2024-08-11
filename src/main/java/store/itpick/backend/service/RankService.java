@@ -2,6 +2,7 @@ package store.itpick.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import store.itpick.backend.common.exception.ReferenceException;
 import store.itpick.backend.dto.rank.RankResponseDTO;
 import store.itpick.backend.model.CommunityPeriod;
 import store.itpick.backend.model.Keyword;
@@ -11,6 +12,8 @@ import store.itpick.backend.repository.KeywordRepository;
 
 import java.util.List;
 import java.util.Optional;
+
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.EMPTY_REFERENCE;
 
 
 //관련자료 조회하는 Service
@@ -57,13 +60,19 @@ public class RankService {
                 response.setNewsContent(reference.getNewsContent());
                 response.setNewsLink(reference.getNewsLink());
 
+                isValidReference(reference.getNewsTitle());
+
                 return response;
             }
         }
 
         return null;
     }
-
+    private void isValidReference(String newsTitle){
+        if(newsTitle.equals("No search")){
+            throw new ReferenceException(EMPTY_REFERENCE);
+        }
+    }
 
 
 

@@ -68,8 +68,14 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      * 7000: Vote 오류
      */
 
-    INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다.");
+    INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다."),
 
+
+    /**
+     * 8000: Reference 오류
+     */
+    INVALID_REFERENCE(8000,HttpStatus.BAD_REQUEST.value(),"잘못된 관련자료 요청입니다"),
+    EMPTY_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료가 비어있습니다");
 
 
 

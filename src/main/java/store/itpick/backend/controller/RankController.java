@@ -2,10 +2,12 @@ package store.itpick.backend.controller;
 
 import org.openqa.selenium.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.response.BaseErrorResponse;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.common.response.status.ResponseStatus;
@@ -25,6 +27,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
+import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 
 @RestController
 @RequestMapping("/rank")
@@ -103,6 +107,8 @@ public class RankController {
             @RequestParam String keyword) {
 
         RankResponseDTO rankResponse = rankService.getReferenceByKeyword(community, period, keyword);
+
+
 
         if (rankResponse == null) {
             // 키워드가 없거나 커뮤니티/기간이 없을 경우 적절한 응답 처리
