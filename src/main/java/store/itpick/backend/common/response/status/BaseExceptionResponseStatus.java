@@ -65,6 +65,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     COMMENT_PARENT_NOT_FOUND(6003,HttpStatus.BAD_REQUEST.value(), "부모 댓글이 존재하지 않습니다."),
     INVALID_COMMENT_HEART_VALUE(6004,HttpStatus.BAD_REQUEST.value(), "댓글 좋아요 생성 요청에서 잘못된 값이 존재합니다."),
     COMMENT_NOT_FOUND(6005,HttpStatus.BAD_REQUEST.value(), "해당 댓글이 존재하지 않습니다."),
+    KEYWORD_NOT_FOUND(6006,HttpStatus.BAD_REQUEST.value(), "해당 키워드가 존재하지 않습니다."),
 
 
     /**
