@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import store.itpick.backend.common.argument_resolver.PreAccessToken;
 import store.itpick.backend.common.argument_resolver.PreAuthorize;
 import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.response.BaseResponse;
@@ -58,12 +59,11 @@ public class UserController {
     }
 
     @PatchMapping("/email")
-    public BaseResponse<?> changeEmail(@PreAuthorize long userId, @Validated @RequestBody EmailRequest emailRequest, BindingResult bindingResult){
+    public BaseResponse<?> changeEmail(@PreAuthorize long userId, @Validated @RequestBody EmailRequest emailRequest, BindingResult bindingResult, @PreAccessToken String AccessToken){
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-        userService.changeEmail(userId, emailRequest.getEmail());
-        return new BaseResponse<>(null);
+        return new BaseResponse<>(userService.changeEmail(userId, emailRequest.getEmail(), AccessToken, emailRequest.getRefreshToken()));
     }
 
     @PatchMapping("/password")

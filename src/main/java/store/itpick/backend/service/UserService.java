@@ -4,8 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.UserException;
+import store.itpick.backend.dto.auth.JwtDTO;
+import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.LikedTopic;
 import store.itpick.backend.model.User;
 import store.itpick.backend.repository.LikedTopicRepository;
@@ -13,10 +16,7 @@ import store.itpick.backend.repository.UserRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.USER_NOT_FOUND;
@@ -29,11 +29,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final LikedTopicRepository likedTopicRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
 
     public void changeNickname(long userId, String nickname) {
         User user = getUser(userId, userRepository);
         user.setNickname(nickname);
+        user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
 
     }
@@ -41,6 +44,7 @@ public class UserService {
     public void changeBirthDate(long userId, String birth_date) {
         User user = getUser(userId, userRepository);
         user.setBirthDate(birth_date);
+        user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
     }
 
@@ -78,18 +82,33 @@ public class UserService {
                 likedTopicRepository.save(newLikedTopic);
             }
         }
+        user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
     }
 
-    public void changeEmail(long userId, String email) {
+    public JwtDTO changeEmail(long userId, String email, String accessToken, String refreshToken) {
         User user = getUser(userId, userRepository);
         user.setEmail(email);
+        user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
+
+        String new_accessToken = jwtProvider.createToken_changeEmail(email, userId, accessToken);
+        String new_refreshToken = jwtProvider.createToken_changeEmail(email, userId, refreshToken);
+
+        user.setRefreshToken(new_refreshToken);
         userRepository.save(user);
+
+
+        return new JwtDTO(new_accessToken, new_refreshToken);
+
+
     }
 
     public void changePassword(long userId, String password) {
         User user = getUser(userId, userRepository);
-        user.setPassword(password);
+        // Encrypt password
+        user.setPassword(passwordEncoder.encode(password));
+        user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
+
         userRepository.save(user);
     }
 }
