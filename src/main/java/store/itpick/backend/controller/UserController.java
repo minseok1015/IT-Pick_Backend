@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import store.itpick.backend.common.argument_resolver.PreAccessToken;
 import store.itpick.backend.common.argument_resolver.PreAuthorize;
 import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.response.BaseResponse;
@@ -37,7 +38,7 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
-
+    /*
     @PatchMapping("/birth-date")
     public BaseResponse<?> changeBrithDate(@PreAuthorize long userId, @Validated @RequestBody BirthDateRequest birthDateRequest, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
@@ -46,6 +47,8 @@ public class UserController {
         userService.changeBirthDate(userId, birthDateRequest.getBirth_date());
         return new BaseResponse<>(null);
     }
+
+     */
 
     @PatchMapping("/liked-topics")
     public BaseResponse<?> changeLikedTopics(@PreAuthorize long userId, @Validated @RequestBody LikedTopicsRequest likedTopicsRequest, BindingResult bindingResult){
@@ -57,14 +60,15 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
+    /*
     @PatchMapping("/email")
-    public BaseResponse<?> changeEmail(@PreAuthorize long userId, @Validated @RequestBody EmailRequest emailRequest, BindingResult bindingResult){
+    public BaseResponse<?> changeEmail(@PreAuthorize long userId, @Validated @RequestBody EmailRequest emailRequest, BindingResult bindingResult, @PreAccessToken String AccessToken){
         if (bindingResult.hasErrors()) {
             throw new UserException(INVALID_USER_VALUE, getErrorMessages(bindingResult));
         }
-        userService.changeEmail(userId, emailRequest.getEmail());
-        return new BaseResponse<>(null);
+        return new BaseResponse<>(userService.changeEmail(userId, emailRequest.getEmail(), AccessToken, emailRequest.getRefreshToken()));
     }
+     */
 
     @PatchMapping("/password")
     public BaseResponse<?> changePassword(@PreAuthorize long userId, @Validated @RequestBody PasswordRequest passwordRequest, BindingResult bindingResult){

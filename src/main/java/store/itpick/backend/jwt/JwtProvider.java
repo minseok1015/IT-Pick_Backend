@@ -43,12 +43,30 @@ public class JwtProvider {
                 .compact();
     }
 
+
+
     public String createRefreshToken(String principal, long userId) {
         log.info("JWT key={}", JWT_SECRET_KEY);
 
         Claims claims = Jwts.claims().setSubject(principal);
         Date now = new Date();
         Date validity = new Date(now.getTime() + JWT_REFRESH_EXPIRED_IN);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .claim("userId", userId)
+                .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
+                .compact();
+    }
+
+    public String createToken_changeEmail(String principal, long userId, String accessToken) {
+        log.info("JWT key={}", JWT_SECRET_KEY);
+
+        Claims claims = Jwts.claims().setSubject(principal);
+        Date now = new Date();
+        Date validity = getValidity(accessToken);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -85,6 +103,13 @@ public class JwtProvider {
                 .setSigningKey(JWT_SECRET_KEY).build()
                 .parseClaimsJws(token)
                 .getBody().getSubject();
+    }
+
+    public Date getValidity(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(JWT_SECRET_KEY).build()
+                .parseClaimsJws(token)
+                .getBody().getExpiration();
     }
 
     public Long getUserIdFromToken(String token){
