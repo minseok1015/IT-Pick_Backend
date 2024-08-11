@@ -12,4 +12,7 @@ public class EmailRequest {
     @NotBlank(message = "email: {NotBlank}")
     @Length(max = 50, message = "email: 최대 {max}자리까지 가능합니다")
     private String email;
+
+    @NotBlank(message = "refreshToken: {NotBlank}")
+    private String refreshToken;
 }

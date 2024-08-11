@@ -30,7 +30,9 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
+        // 토큰 값 가져오기
         String accessToken = resolveAccessToken(request);
+        // 만료 확인
         validateAccessToken(accessToken);
 
         String email = jwtProvider.getPrincipal(accessToken);

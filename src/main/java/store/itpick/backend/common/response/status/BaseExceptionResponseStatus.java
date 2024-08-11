@@ -60,8 +60,11 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      * 6000: Debate 오류
      */
     INVALID_DEBATE_VALUE(6000, HttpStatus.BAD_REQUEST.value(), "토론 생성 요청에서 잘못된 값이 존재합니다."),
-
-
+    INVALID_COMMENT_VALUE(6001,HttpStatus.BAD_REQUEST.value(), "댓글 생성 요청에서 잘못된 값이 존재합니다."),
+    DEBATE_NOT_FOUND(6002,HttpStatus.BAD_REQUEST.value(), "해당 토론이 존재하지 않습니다."),
+    COMMENT_PARENT_NOT_FOUND(6003,HttpStatus.BAD_REQUEST.value(), "부모 댓글이 존재하지 않습니다."),
+    INVALID_COMMENT_HEART_VALUE(6004,HttpStatus.BAD_REQUEST.value(), "댓글 좋아요 생성 요청에서 잘못된 값이 존재합니다."),
+    COMMENT_NOT_FOUND(6005,HttpStatus.BAD_REQUEST.value(), "해당 댓글이 존재하지 않습니다."),
 
 
     /**
@@ -69,6 +72,9 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      */
 
     INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다."),
+    INVALID_VOTE_VALUE(7001,HttpStatus.BAD_REQUEST.value(), "투표 요청에서 잘못된 값이 존재합니다."),
+    VOTE_OPTION_NOT_FOUND(7002,HttpStatus.BAD_REQUEST.value(), "해당 투표 옵션이 존재하지 않습니다."),
+
 
 
     /**

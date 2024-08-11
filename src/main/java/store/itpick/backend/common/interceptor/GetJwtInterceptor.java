@@ -19,29 +19,23 @@ import static store.itpick.backend.common.response.status.BaseExceptionResponseS
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtAuthRefreshInterceptor implements HandlerInterceptor {
+public class GetJwtInterceptor implements HandlerInterceptor {
 
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
-    private final JwtProvider jwtProvider;
-    private final AuthService authService;
 
     // 컨트롤러 호출전에 JWT 검증
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
-        String refreshToken = resolveRefreshToken(request);
-        validateRefreshToken(refreshToken);
+        // 토큰 값 가져오기
+        String accessToken = resolveAccessToken(request);
 
-        String email = jwtProvider.getPrincipal(refreshToken);
-        validatePayload(email);
-
-        long userId = authService.getUserIdByEmail(email);
-        request.setAttribute("userId", userId);
+        request.setAttribute("accessToken", accessToken);
         return true;
 
     }
 
-    private String resolveRefreshToken(HttpServletRequest request) {
+    private String resolveAccessToken(HttpServletRequest request) {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         validateToken(token);
         return token.substring(JWT_TOKEN_PREFIX.length());
@@ -53,18 +47,6 @@ public class JwtAuthRefreshInterceptor implements HandlerInterceptor {
         }
         if (!token.startsWith(JWT_TOKEN_PREFIX)) {
             throw new JwtUnsupportedTokenException(UNSUPPORTED_TOKEN_TYPE);
-        }
-    }
-
-    private void validateRefreshToken(String accessToken) {
-        if (jwtProvider.isExpiredToken(accessToken)) {
-            throw new JwtExpiredTokenException(EXPIRED_TOKEN);
-        }
-    }
-
-    private void validatePayload(String email) {
-        if (email == null) {
-            throw new JwtInvalidTokenException(INVALID_TOKEN);
         }
     }
 
