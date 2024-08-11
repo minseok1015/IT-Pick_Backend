@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "user_vote_choise")
+@Table(name = "user_vote_choice")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,8 +17,8 @@ import java.sql.Timestamp;
 public class UserVoteChoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_vote_choise_id")
-    private Long UserVoteChoiseId;
+    @Column(name = "user_vote_choice_id")
+    private Long UserVoteChoiceId;
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;

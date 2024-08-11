@@ -105,7 +105,6 @@ public class DebateService {
                     .commentHeartId(deletedCommentHeartId)
                     .build();
         } else {
-            // 존재하지 않으면 새로운 CommentHeart 생성 및 저장
             CommentHeart commentHeart = CommentHeart.builder()
                     .user(userOptional.get())
                     .comment(commentOptional.get())

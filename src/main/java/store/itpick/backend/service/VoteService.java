@@ -4,32 +4,31 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.exception.VoteException;
 import store.itpick.backend.dto.debate.VoteOptionRequest;
+import store.itpick.backend.dto.vote.PostUserVoteChoiceRequest;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.dto.vote.PostVoteResponse;
-import store.itpick.backend.model.Debate;
-import store.itpick.backend.model.Vote;
-import store.itpick.backend.model.VoteOption;
-import store.itpick.backend.repository.DebateRepository;
-import store.itpick.backend.repository.VoteRepository;
-import store.itpick.backend.repository.VoteOptionRepository;
+import store.itpick.backend.model.*;
+import store.itpick.backend.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_DEBATE_ID;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class VoteService {
 
+    private final UserRepository userRepository;
     private final VoteRepository voteRepository;
     private final DebateRepository debateRepository;
     private final VoteOptionRepository voteOptionRepository;
+    private final UserVoteChoiceRepository userVoteChoiceRepository;
 
     @Transactional
     public PostVoteResponse createVote(PostVoteRequest postVoteRequest, List<VoteOptionRequest> voteOptions) {
@@ -66,5 +65,26 @@ public class VoteService {
 
             voteOptionRepository.save(voteOption);
         }
+    }
+
+    @Transactional
+    public void createUserVoteChoice(PostUserVoteChoiceRequest postUserVoteChoiceRequest) {
+        User user = userRepository.findById(postUserVoteChoiceRequest.getUserId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        VoteOption voteOption = voteOptionRepository.findById(postUserVoteChoiceRequest.getVoteOptionId())
+                .orElseThrow(() -> new VoteException(VOTE_OPTION_NOT_FOUND));
+
+        userVoteChoiceRepository.deleteByVoteOption_VoteAndUser(voteOption.getVote(), user);
+
+        UserVoteChoice userVoteChoice = UserVoteChoice.builder()
+                .user(user)
+                .voteOption(voteOption)
+                .status("active")
+                .createAt(Timestamp.valueOf(LocalDateTime.now()))
+                .updateAt(Timestamp.valueOf(LocalDateTime.now()))
+                .build();
+
+        userVoteChoiceRepository.save(userVoteChoice);
     }
 }

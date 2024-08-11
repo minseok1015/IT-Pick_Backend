@@ -39,6 +39,6 @@ public class VoteOption {
     @JoinColumn(name = "vote_id", nullable = false)
     private Vote vote;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "voteOption")
     private List<UserVoteChoice> userVoteChoices;
 }
