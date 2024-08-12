@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.itpick.backend.common.exception.KeywordException;
 import store.itpick.backend.common.response.BaseResponse;
+import store.itpick.backend.dto.keyword.SearchDTO;
 import store.itpick.backend.model.Keyword;
 import store.itpick.backend.service.KeywordService;
 
@@ -23,9 +24,17 @@ public class KeywordController {
 
     private final KeywordService keywordService;
 
-    @GetMapping("/search")
+    @GetMapping("/search/nobadge")
     public BaseResponse<List<String>> searchKeywords(@RequestParam String query) {
         List<String> keywords = keywordService.searchKeywords(query);
+        if(keywords.isEmpty()){
+            throw new KeywordException(NO_SEARCH_KEYWORD);
+        }
+        return new BaseResponse<>(keywords);
+    }
+    @GetMapping("/search")
+    public BaseResponse<List<SearchDTO>> searchKeywordsWithBadge(@RequestParam String query) {
+        List<SearchDTO> keywords = keywordService.searchKeywordsWithBadge(query);
         if(keywords.isEmpty()){
             throw new KeywordException(NO_SEARCH_KEYWORD);
         }

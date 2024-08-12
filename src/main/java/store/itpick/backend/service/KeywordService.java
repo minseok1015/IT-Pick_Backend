@@ -6,19 +6,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import store.itpick.backend.dto.keyword.SearchDTO;
+import store.itpick.backend.dto.redis.RankDTO;
+import store.itpick.backend.dto.redis.RankListForKeyword;
 import store.itpick.backend.model.CommunityPeriod;
 import store.itpick.backend.model.Keyword;
+import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.repository.CommunityPeriodRepository;
 import store.itpick.backend.repository.KeywordRepository;
+import store.itpick.backend.util.Redis;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +30,7 @@ public class KeywordService {
 
     private final KeywordRepository keywordRepository;
     private final CommunityPeriodRepository communityPeriodRepository;
+    private final Redis redis;
 
 
 
@@ -179,14 +182,30 @@ public class KeywordService {
     }
 
     public List<String> searchKeywords(String keyword) {
-        List<Keyword> keywordList= keywordRepository.findByKeywordContainingIgnoreCase(keyword);
+        List<Keyword> keywordList= keywordRepository.findByKeywordStartingWithIgnoreCase(keyword);
+        List<String> keywords= new ArrayList<>();
+        for (Keyword keyword1 : keywordList) {
+            keywords.add(keyword1.getKeyword());
+        }
+        return keywords;
+    }
+
+    public List<SearchDTO> searchKeywordsWithBadge(String keyword) {
+        List<Keyword> keywordList= keywordRepository.findByKeywordStartingWithIgnoreCase(keyword);
         List<String> keywords= new ArrayList<>();
         for (Keyword keyword1 : keywordList) {
             keywords.add(keyword1.getKeyword());
         }
 
-        return keywords;
+        List<SearchDTO> rankingList = new ArrayList<>();
+        for (String keywordBadge : keywords) {
+            RankListForKeyword rankingBadgeResponse = redis.getRankingBadgeResponse(keywordBadge, PeriodType.BY_REAL_TIME, "");
+            rankingList.add(new SearchDTO(keywordBadge, rankingBadgeResponse.getNateRank(), rankingBadgeResponse.getNaverRank(), rankingBadgeResponse.getZumRank()));
+        }
+        return rankingList;
     }
+
+
 
 
 }
