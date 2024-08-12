@@ -78,6 +78,7 @@ public class UserService {
                 likedTopicRepository.save(newLikedTopic);
             }
         }
+        //TODO 없는 토픽 id 넣을시 Exception throw 추가
         userRepository.save(user);
     }
 
