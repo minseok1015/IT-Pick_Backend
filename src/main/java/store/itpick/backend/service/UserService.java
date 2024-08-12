@@ -116,4 +116,10 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+
+    public String getProfileImgUrl(long userId) {
+        User user = getUser(userId, userRepository);
+        return user.getImageUrl();
+    }
 }

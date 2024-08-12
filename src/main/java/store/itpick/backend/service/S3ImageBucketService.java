@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import store.itpick.backend.common.exception.UserException;
-import store.itpick.backend.dto.user.ProfileImgResponse;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_PROFILE_IMG;
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.UPLOAD_FAIL;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
 
 
 @Service
@@ -81,7 +81,34 @@ public class S3ImageBucketService {
     }
 
 
+    // 이미지 삭제
+    public void deleteImage(String imgUrl) {
+        try {
 
+            // url로 파일 이름 인덱싱
+            String fileName = extractFileNameFromUrl(imgUrl);
+            amazonS3Client.deleteObject(bucket, fileName);
+            log.info("Image deleted successfully: {}", fileName);
+        } catch (Exception e) {
+            log.error("Error occurred while deleting image: {}", imgUrl, e);
+            throw new UserException(UPLOAD_FAIL);
+        }
+    }
 
+    private String extractFileNameFromUrl(String fileNameOrUrl) {
+        if (fileNameOrUrl.startsWith("https://")) {
+            try {
+                URI uri = new URI(fileNameOrUrl);
+                // URI의 path 부분만 반환 ("/profile/some-image.jpg"와 같은 형식)
+                return uri.getPath().substring(1); // 앞의 "/" 제거
+            } catch (URISyntaxException e) {
+                throw new UserException(UPLOAD_FAIL);
+            }
+        }
+        else {
+            // URL이 아닌 경우
+            throw new UserException(INVALID_USER_DB_VALUE);
+        }
+    }
 
 }

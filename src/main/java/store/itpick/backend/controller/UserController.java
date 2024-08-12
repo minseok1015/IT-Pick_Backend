@@ -80,6 +80,10 @@ public class UserController {
 
     @PostMapping("/profile-img")
     public BaseResponse<ProfileImgResponse> changeProfileImg(@PreAuthorize long userId,@RequestParam("file") MultipartFile file){
+        String previousImgUrl = userService.getProfileImgUrl(userId);
+        if (previousImgUrl != null)  {
+            s3ImageBucketService.deleteImage(previousImgUrl);
+        }
         String imgUrl = s3ImageBucketService.saveProfileImg(file);
         userService.changeProfileImg(userId, imgUrl);
         return new BaseResponse<>(new ProfileImgResponse(imgUrl));
