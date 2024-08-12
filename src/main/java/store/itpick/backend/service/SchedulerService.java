@@ -3,12 +3,10 @@ package store.itpick.backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.TimeoutException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import store.itpick.backend.model.PeriodType;
+import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.util.Redis;
 
 import java.time.DayOfWeek;
