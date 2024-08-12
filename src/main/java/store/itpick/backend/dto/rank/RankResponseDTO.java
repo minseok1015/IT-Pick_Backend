@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RankResponseDTO {
+    private Long keywordId;
     private String keyword;
     private String searchLink;
     private String newsTitle;
