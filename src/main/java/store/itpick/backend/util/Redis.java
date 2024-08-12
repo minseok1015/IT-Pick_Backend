@@ -69,6 +69,7 @@ public class Redis {
 
         for (int i = 0; i < realTimeKeyList.size(); i++) {
             int score = 10;
+            redisTemplate.delete(dayKeyList.get(i));    // 기존 키 삭제
             for (Object realTimeKeyword : Objects.requireNonNull(zSetOperations.reverseRange(realTimeKeyList.get(i), 0, 9))) {
                 zSetOperations.add(dayKeyList.get(i), realTimeKeyword, score--);
             }
@@ -91,6 +92,7 @@ public class Redis {
         for (List<String> dayKeyList : dayKeyListOfPreviousWeek) {   // 지난주 월요일부터 일요일까지, 각 커뮤니티의 키 리스트
             for (int i = 0; i < dayKeyList.size(); i++) {  // naver, nate, zum에 대하여
                 int score = 10;
+                redisTemplate.delete(weekKeyList.get(i));   // 기존 키 삭제
                 for (Object dayKeyword : Objects.requireNonNull(zSetOperations.reverseRange(dayKeyList.get(i), 0, 9))) {
                     if (!Boolean.TRUE.equals(zSetOperations.addIfAbsent(weekKeyList.get(i), dayKeyword, score))) {
                         zSetOperations.add(weekKeyList.get(i), dayKeyword, score + zSetOperations.score(weekKeyList.get(i), dayKeyword));
