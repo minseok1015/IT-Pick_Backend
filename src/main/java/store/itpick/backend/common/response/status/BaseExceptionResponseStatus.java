@@ -85,7 +85,12 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      * 8000: Reference 오류
      */
     INVALID_REFERENCE(8000,HttpStatus.BAD_REQUEST.value(),"잘못된 관련자료 요청입니다"),
-    EMPTY_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료가 비어있습니다");
+    NO_Search_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료를 뉴스에서 검색하지 못하였습니다"),
+
+    EMPTY_REFERENCE(8002,HttpStatus.BAD_REQUEST.value(),"해당 키워드의 관련자료를 찾지 못하였습니다");
+
+
+
 
 
 
