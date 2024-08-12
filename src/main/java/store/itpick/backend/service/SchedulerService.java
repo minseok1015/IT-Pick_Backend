@@ -76,7 +76,6 @@ public class SchedulerService {
     private boolean isDailyTaskTime() {
         LocalTime now = LocalTime.now();
         return now.getHour() == 18 && now.getMinute() == 0;
-//        return now.getMinute() == 0 ||now.getMinute() == 10 ||now.getMinute() == 20 ||now.getMinute() == 30 ||now.getMinute() == 40 ||now.getMinute() == 50;
     }
 
     private boolean isMonday() {
