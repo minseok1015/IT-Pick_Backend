@@ -5,10 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.DebateException;
-import store.itpick.backend.common.exception.UserException;
+import store.itpick.backend.common.exception.AuthException;
 import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.dto.vote.PostVoteRequest;
-import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.Comment;
 import store.itpick.backend.model.CommentHeart;
 import store.itpick.backend.model.Debate;
@@ -72,7 +71,7 @@ public class DebateService {
 
         Optional<User> userOptional = userRepository.findById(postCommentRequest.getUserId());
         if (!userOptional.isPresent()) {
-            throw new UserException(USER_NOT_FOUND);
+            throw new AuthException(USER_NOT_FOUND);
         }
         User user = userOptional.get();
 
@@ -88,7 +87,7 @@ public class DebateService {
 
         Optional<User> userOptional = userRepository.findById(postCommentHeartRequest.getUserId());
         if (!userOptional.isPresent()) {
-            throw new UserException(USER_NOT_FOUND);
+            throw new AuthException(USER_NOT_FOUND);
         }
 
         Optional<Comment> commentOptional = commentRepository.findById(postCommentHeartRequest.getCommentId());

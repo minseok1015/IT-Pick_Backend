@@ -55,6 +55,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     NO_SUCH_ALGORITHM(5009, HttpStatus.BAD_REQUEST.value(), "인증 번호 생성을 위한 알고리즘을 찾을 수 없습니다."),
     AUTH_CODE_IS_NOT_SAME(5010, HttpStatus.BAD_REQUEST.value(), "인증 번호가 일치하지 않습니다."),
     MEMBER_EXISTS(5011,HttpStatus.BAD_REQUEST.value(), "이미 존재하는 회원입니다."),
+    INVALID_PROFILE_IMG(5012,HttpStatus.BAD_REQUEST.value(), "잘못된 이미지 파일입니다."),
+    UPLOAD_FAIL(5013,HttpStatus.BAD_REQUEST.value(), "파일 업로드에 실패했습니다. 인터넷 연결을 확인하거나, 나중에 다시 시도해 주세요."),
 
     /**
      * 6000: Debate 오류
