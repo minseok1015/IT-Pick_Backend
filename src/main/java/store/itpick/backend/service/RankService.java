@@ -53,6 +53,7 @@ public class RankService {
                 Reference reference = latestKeyword.getReference();
 
                 RankResponseDTO response = new RankResponseDTO();
+                response.setKeywordId(latestKeyword.getKeywordId());
                 response.setKeyword(latestKeyword.getKeyword());
                 response.setSearchLink(reference.getSearchLink());
                 response.setNewsTitle(reference.getNewsTitle());
