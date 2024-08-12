@@ -2,19 +2,15 @@ package store.itpick.backend.controller;
 
 import org.openqa.selenium.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.response.BaseErrorResponse;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.common.response.status.ResponseStatus;
-import store.itpick.backend.model.CommunityType;
-import store.itpick.backend.model.PeriodType;
-import store.itpick.backend.dto.rank.RankResponseDTO;
-import store.itpick.backend.common.response.BaseResponse;
+import store.itpick.backend.model.rank.CommunityType;
+import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.dto.rank.RankResponseDTO;
 import store.itpick.backend.model.Reference;
 import store.itpick.backend.service.*;
@@ -27,8 +23,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
-import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 
 @RestController
 @RequestMapping("/rank")
@@ -53,7 +47,6 @@ public class RankController {
 
     @Autowired
     private SchedulerService schedulerService;
-
 
 
     // 최대 재시도 횟수와 재시도 간격 (초)
@@ -97,9 +90,6 @@ public class RankController {
         return executeWithRetries(() -> seleniumService.useDriverForNamuwiki(url), "Namuwiki 데이터 수집");
     }
 
-
-
-
     @GetMapping("/reference")
     public BaseResponse<RankResponseDTO> getReference(
             @RequestParam String community,
@@ -107,8 +97,6 @@ public class RankController {
             @RequestParam String keyword) {
 
         RankResponseDTO rankResponse = rankService.getReferenceByKeyword(community, period, keyword);
-
-
 
         if (rankResponse == null) {
             // 키워드가 없거나 커뮤니티/기간이 없을 경우 적절한 응답 처리
@@ -119,22 +107,22 @@ public class RankController {
     }
 
     @GetMapping("/update/naver")
-    public void getUpdate(){
+    public void getUpdate() {
         keywordService.performDailyTasksNaver();
     }
 
     @GetMapping("/update/nate")
-    public void updateNate(){
+    public void updateNate() {
         keywordService.performDailyTasksNate();
     }
 
     @GetMapping("/update/zum")
-    public void updateZum(){
+    public void updateZum() {
         keywordService.performDailyTasksZum();
     }
 
     @GetMapping("/update")
-    public void update(){
+    public void update() {
         schedulerService.performHourlyTasks();
     }
 
@@ -159,6 +147,15 @@ public class RankController {
             return new BaseErrorResponse(BAD_REQUEST);
         }
         return new BaseResponse<>(redis.getRankingList(communityType, periodType, date));
+    }
+
+    @GetMapping("/badge")
+    public ResponseStatus getRankingBadgeForKeyword(@RequestParam String keyword, @RequestParam String period, @RequestParam String date) {
+        PeriodType periodType = getPeriodType(period);
+        if (periodType == null || !isValidatedDate(periodType, date)) {
+            return new BaseErrorResponse(BAD_REQUEST);
+        }
+        return new BaseResponse<>(redis.getRankingBadgeResponse(keyword, periodType, date));
     }
 
     @GetMapping("/day/test")

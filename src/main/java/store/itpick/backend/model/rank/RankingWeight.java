@@ -1,4 +1,4 @@
-package store.itpick.backend.model;
+package store.itpick.backend.model.rank;
 
 import lombok.RequiredArgsConstructor;
 

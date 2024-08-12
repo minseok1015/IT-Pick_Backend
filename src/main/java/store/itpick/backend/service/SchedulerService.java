@@ -6,7 +6,7 @@ import org.openqa.selenium.TimeoutException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import store.itpick.backend.model.PeriodType;
+import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.util.Redis;
 
 import java.time.DayOfWeek;
