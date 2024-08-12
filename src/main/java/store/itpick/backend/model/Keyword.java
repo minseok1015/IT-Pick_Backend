@@ -49,6 +49,9 @@ public class Keyword {
     )
     private List<CommunityPeriod> communityPeriods = new ArrayList<>();
 
+    @OneToMany(mappedBy = "keyword")
+    private List<Debate> debates;
+
     @PrePersist
     protected void onCreate() {
         Timestamp now = Timestamp.from(Instant.now());

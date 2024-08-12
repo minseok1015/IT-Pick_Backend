@@ -1,22 +1,24 @@
 package store.itpick.backend.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Entity
-@Table(name = "vote")
+@Table(name = "user_vote_choice")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Vote {
+public class UserVoteChoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vote_id")
-    private Long voteId;
+    @Column(name = "user_vote_choice_id")
+    private Long UserVoteChoiceId;
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
@@ -27,10 +29,13 @@ public class Vote {
     @Column(name = "update_at")
     private Timestamp updateAt;
 
-    @OneToOne
-    @JoinColumn(name = "debate_id", nullable = false)
-    private Debate debate;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
-    private List<VoteOption> voteOptions;
+    @ManyToOne
+    @JoinColumn(name="vote_option_id",nullable = false)
+    private VoteOption voteOption;
 }
+
+

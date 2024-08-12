@@ -67,14 +67,24 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     COMMENT_PARENT_NOT_FOUND(6003,HttpStatus.BAD_REQUEST.value(), "부모 댓글이 존재하지 않습니다."),
     INVALID_COMMENT_HEART_VALUE(6004,HttpStatus.BAD_REQUEST.value(), "댓글 좋아요 생성 요청에서 잘못된 값이 존재합니다."),
     COMMENT_NOT_FOUND(6005,HttpStatus.BAD_REQUEST.value(), "해당 댓글이 존재하지 않습니다."),
+    KEYWORD_NOT_FOUND(6006,HttpStatus.BAD_REQUEST.value(), "해당 키워드가 존재하지 않습니다."),
 
 
     /**
      * 7000: Vote 오류
      */
 
-    INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다.");
+    INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다."),
+    INVALID_VOTE_VALUE(7001,HttpStatus.BAD_REQUEST.value(), "투표 요청에서 잘못된 값이 존재합니다."),
+    VOTE_OPTION_NOT_FOUND(7002,HttpStatus.BAD_REQUEST.value(), "해당 투표 옵션이 존재하지 않습니다."),
 
+
+
+    /**
+     * 8000: Reference 오류
+     */
+    INVALID_REFERENCE(8000,HttpStatus.BAD_REQUEST.value(),"잘못된 관련자료 요청입니다"),
+    EMPTY_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료가 비어있습니다");
 
 
 
