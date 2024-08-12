@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class GetRankingListResponse {
     private String redisKey;
-    private List<String> rankingList;
+    private List<RankDTO> rankingList;
 }

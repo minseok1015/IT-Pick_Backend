@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
-import store.itpick.backend.dto.redis.GetRankingBadgeResponse;
+import store.itpick.backend.dto.redis.RankListForKeyword;
 import store.itpick.backend.dto.redis.GetRankingListResponse;
+import store.itpick.backend.dto.redis.RankDTO;
 import store.itpick.backend.model.rank.CommunityType;
 import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.model.rank.RankingWeight;
@@ -126,15 +127,18 @@ public class Redis {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         String key = makeKey(communityType, periodType, date);
 
-        List<String> rankingList = new ArrayList<>();
-        for (Object keyword : Objects.requireNonNull(zSetOperations.reverseRange(key, 0, 9))) {
-            rankingList.add((String) keyword);
+        List<RankDTO> rankingList = new ArrayList<>();
+        long rank = 1;
+        for (Object object : Objects.requireNonNull(zSetOperations.reverseRange(key, 0, 9))) {
+            String keyword = (String) object;
+            RankListForKeyword rankingBadgeResponse = getRankingBadgeResponse(keyword, periodType, date);
+            rankingList.add(new RankDTO(keyword, rank++, rankingBadgeResponse.getNateRank(), rankingBadgeResponse.getNaverRank(), rankingBadgeResponse.getZumRank()));
         }
 
         return new GetRankingListResponse(key, rankingList);
     }
 
-    public GetRankingBadgeResponse getRankingBadgeResponse(String keyword, PeriodType periodType, String date) {
+    public RankListForKeyword getRankingBadgeResponse(String keyword, PeriodType periodType, String date) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         List<CommunityType> communityTypeList = CommunityType.getAllExceptTotal();
         List<Long> rankByCommunity = new ArrayList<>();
@@ -149,7 +153,7 @@ public class Redis {
             rankByCommunity.add(rank + 1);
         }
 
-        return new GetRankingBadgeResponse(rankByCommunity.get(0), rankByCommunity.get(1), rankByCommunity.get(2));
+        return new RankListForKeyword(rankByCommunity.get(0), rankByCommunity.get(1), rankByCommunity.get(2));
     }
 
     private static String makeKey(CommunityType communityType, PeriodType periodType, String date) {
