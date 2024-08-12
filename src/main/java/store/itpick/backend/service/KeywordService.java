@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -176,4 +177,16 @@ public class KeywordService {
             keywordRepository.save(keyword); // 연관관계 업데이트 후 저장
         }
     }
+
+    public List<String> searchKeywords(String keyword) {
+        List<Keyword> keywordList= keywordRepository.findByKeywordContainingIgnoreCase(keyword);
+        List<String> keywords= new ArrayList<>();
+        for (Keyword keyword1 : keywordList) {
+            keywords.add(keyword1.getKeyword());
+        }
+
+        return keywords;
+    }
+
+
 }
