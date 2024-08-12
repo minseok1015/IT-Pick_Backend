@@ -61,7 +61,7 @@ public class SchedulerService {
 
     // 매 시간마다 실행하는 작업
     @Transactional
-    @Scheduled(cron = "0 0,15,20,30,45 * * * *")
+    @Scheduled(cron = "0 0,5,10,15,20,25,30,35,40,45,50,55 * * * *")
     public void performScheduledTasks() {
         log.info("Starting scheduled tasks...");
         if (isDailyTaskTime()) {
@@ -78,7 +78,7 @@ public class SchedulerService {
     private boolean isDailyTaskTime() {
         LocalTime now = LocalTime.now();
 //        return now.getHour() == 11 && now.getMinute() == 15;
-        return now.getMinute() == 15;
+        return now.getMinute() == 0 ||now.getMinute() == 10 ||now.getMinute() == 20 ||now.getMinute() == 30 ||now.getMinute() == 40 ||now.getMinute() == 50;
     }
 
     private boolean isMonday() {
