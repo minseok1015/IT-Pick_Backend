@@ -46,9 +46,6 @@ public class RankController {
     @Autowired
     private KeywordService keywordService;
 
-    @Autowired
-    private SchedulerService schedulerService;
-
 
     // 최대 재시도 횟수와 재시도 간격 (초)
     private static final int MAX_RETRIES = 5;
@@ -121,10 +118,7 @@ public class RankController {
         keywordService.performDailyTasksZum();
     }
 
-    @GetMapping("/update")
-    public void update() {
-        schedulerService.performHourlyTasks();
-    }
+
 
     @GetMapping("/naver")
     public List<Reference> getRankFromSignal() {
