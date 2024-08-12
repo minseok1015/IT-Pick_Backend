@@ -7,26 +7,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import store.itpick.backend.common.exception.ReferenceException;
 import store.itpick.backend.model.*;
-import store.itpick.backend.repository.KeywordRepository;
-import store.itpick.backend.service.KeywordService;
-import store.itpick.backend.service.CommunityPeriodService;
+import store.itpick.backend.model.rank.CommunityType;
+import store.itpick.backend.model.rank.PeriodType;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import store.itpick.backend.util.Redis;
 import store.itpick.backend.util.SeleniumUtil;
 
@@ -36,10 +26,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.EMPTY_REFERENCE;
 
 @Slf4j
 @Component

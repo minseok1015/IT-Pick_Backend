@@ -4,10 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
+import store.itpick.backend.dto.redis.GetRankingBadgeResponse;
 import store.itpick.backend.dto.redis.GetRankingListResponse;
-import store.itpick.backend.model.CommunityType;
-import store.itpick.backend.model.PeriodType;
-import store.itpick.backend.model.RankingWeight;
+import store.itpick.backend.model.rank.CommunityType;
+import store.itpick.backend.model.rank.PeriodType;
+import store.itpick.backend.model.rank.RankingWeight;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -133,8 +134,26 @@ public class Redis {
         return new GetRankingListResponse(key, rankingList);
     }
 
+    public GetRankingBadgeResponse getRankingBadgeResponse(String keyword, PeriodType periodType, String date) {
+        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+        List<CommunityType> communityTypeList = CommunityType.getAllExceptTotal();
+        List<Long> rankByCommunity = new ArrayList<>();
+
+        for (CommunityType communityType : communityTypeList) {
+            String key = makeKey(communityType, periodType, date);
+            Long rank = zSetOperations.reverseRank(key, keyword);
+            if (rank == null) {
+                rankByCommunity.add((long) -1);
+                continue;
+            }
+            rankByCommunity.add(rank + 1);
+        }
+
+        return new GetRankingBadgeResponse(rankByCommunity.get(0), rankByCommunity.get(1), rankByCommunity.get(2));
+    }
+
     private static String makeKey(CommunityType communityType, PeriodType periodType, String date) {
-        String key = communityType.get() + "_";
+        String key = communityType.value() + "_";
         switch (periodType) {
             case BY_REAL_TIME -> key += periodType.get();
             case BY_DAY -> key += DateUtils.getDate(DateUtils.getLocalDate(date));
@@ -152,13 +171,13 @@ public class Redis {
     }
 
     private static int getWeight(String key) {
-        if (key.startsWith(CommunityType.NAVER.get())) {
+        if (key.startsWith(CommunityType.NAVER.value())) {
             return RankingWeight.NAVER.get();
         }
-        if (key.startsWith(CommunityType.NATE.get())) {
+        if (key.startsWith(CommunityType.NATE.value())) {
             return RankingWeight.NATE.get();
         }
-        if (key.startsWith(CommunityType.ZUM.get())) {
+        if (key.startsWith(CommunityType.ZUM.value())) {
             return RankingWeight.ZUM.get();
         }
         return -1;
