@@ -43,8 +43,7 @@ public class SeleniumService {
 
 
     // ChromeDriver 연결 (WEB_DRIVER_PATH 값 주입되고 사용해야 하므로 PostConstruct)
-    @PostConstruct
-    private void initDriver() {
+    public void initDriver() {
         seleniumUtil.initDriver();
         driver = seleniumUtil.getDriver();
     }
