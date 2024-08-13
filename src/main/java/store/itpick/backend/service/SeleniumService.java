@@ -8,10 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -425,42 +422,87 @@ public class SeleniumService {
      나무위키 크롤링
      **/
 
+//    public String useDriverForNamuwiki(String url) {
+//        driver.get(url);
+//
+//        Actions actions = new Actions(driver);
+//
+//        // class명으로 하면 되지만, 계속 변경됨
+////        WebElement webElement = driver.findElement(By.className("jM2TE0NV"));
+////        actions.moveToElement(webElement).perform();
+////        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.className("_0SwtPj9H")));
+////        System.out.println(ul.getText());
+//
+//        // xpath
+////        WebElement webElement = driver.findElement(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div"));
+////        actions.moveToElement(webElement).perform();
+////        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
+////        System.out.println(ul.getText());
+//
+//        // until을 통해 준비되는대로 바로 실행
+//        // 다만, 나무위키의 div 개수가 동적으로 변경되어서 xpath를 어떻게 할지 고민
+////        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div")));
+//        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
+//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div")));
+//        actions.moveToElement(webElement).perform();
+//
+////        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div/ul")));
+//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
+//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
+//        System.out.println(ul.getText());
+//
+//        return null;
+//    }
+
+
     public String useDriverForNamuwiki(String url) {
         driver.get(url);
 
         Actions actions = new Actions(driver);
 
-        // class명으로 하면 되지만, 계속 변경됨
-//        WebElement webElement = driver.findElement(By.className("jM2TE0NV"));
-//        actions.moveToElement(webElement).perform();
-//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.className("_0SwtPj9H")));
-//        System.out.println(ul.getText());
 
-        // xpath
-//        WebElement webElement = driver.findElement(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div"));
-//        actions.moveToElement(webElement).perform();
-//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
-//        System.out.println(ul.getText());
+        WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div > div > div > div > div > div > div > ul a span")));
+        actions.moveToElement(button).perform();
 
-        // until을 통해 준비되는대로 바로 실행
-        // 다만, 나무위키의 div 개수가 동적으로 변경되어서 xpath를 어떻게 할지 고민
-//        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div")));
-        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div")));
-        actions.moveToElement(webElement).perform();
+        // 키워드 수집
+        List<WebElement> webElementByKeyword = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a span"));
 
-//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div/ul")));
-        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
-        System.out.println(ul.getText());
+        List<String> keywordList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            WebElement element = webElementByKeyword.get(i);
+            String keyword = element.getText();
+            if(keyword.isEmpty()){
+                throw new TimeoutException();
+            }
+            keywordList.add(keyword);
+            System.out.println(keyword);
+        }
+
+        /**나무위키 관련 Redis저장**/
+
+//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+
+        // 링크 수집
+        List<WebElement> webElementBySearchLink = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a"));
+        List<String> linksList = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            String searchLink = webElementBySearchLink.get(i).getAttribute("href");
+            linksList.add(searchLink);
+            System.out.println(searchLink);
+        }
+
+//        processKeywordsAndReferences("namu", keywordList, linksList);
 
         return null;
-    }
 
+
+    }
 }
 
 
