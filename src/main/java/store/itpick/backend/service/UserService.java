@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.dto.auth.JwtDTO;
+import store.itpick.backend.dto.user.GetUserResponse;
 import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.LikedTopic;
 import store.itpick.backend.model.User;
@@ -124,6 +125,39 @@ public class UserService {
         user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
 
         userRepository.save(user);
+    }
+
+
+
+    // Get
+    public GetUserResponse.Nickname getNickname(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.Nickname(user.getNickname());
+    }
+
+    public GetUserResponse.Email getEmail(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.Email(user.getEmail());
+    }
+
+    public GetUserResponse.BirthDate getBirthDate(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.BirthDate(user.getBirthDate());
+    }
+
+    public GetUserResponse.LikedTopicList getLikedTopicList(long userId) {
+        User user = getUser(userId, userRepository);
+        List<String> existingLikedTopicList = user.getLikedTopics()
+                .stream()
+                .map(LikedTopic::getLiked_topic) // LikedTopic 객체의 liked_topic 필드를 추출
+                .collect(Collectors.toList());  // List<String>으로 수집
+
+        return new GetUserResponse.LikedTopicList(existingLikedTopicList);
+    }
+
+    public GetUserResponse.ProfileImg getProfileImg(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.ProfileImg(user.getImageUrl());
     }
 
 
