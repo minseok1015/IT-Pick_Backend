@@ -78,7 +78,7 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
-    @PostMapping("/profile-img")
+    @PatchMapping("/profile-img")
     public BaseResponse<ProfileImgResponse> changeProfileImg(@PreAuthorize long userId,@RequestParam("file") MultipartFile file){
         String previousImgUrl = userService.getProfileImgUrl(userId);
         if (previousImgUrl != null)  {
