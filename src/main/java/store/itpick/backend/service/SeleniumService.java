@@ -477,6 +477,7 @@ public class SeleniumService {
             WebElement element = webElementByKeyword.get(i);
             String keyword = element.getText();
             if(keyword.isEmpty()){
+                System.out.println("데이터를 다 못찾았습니다");
                 throw new TimeoutException();
             }
             keywordList.add(keyword);
@@ -488,15 +489,17 @@ public class SeleniumService {
 //        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
-        List<WebElement> webElementBySearchLink = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a"));
         List<String> linksList = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            String searchLink = webElementBySearchLink.get(i).getAttribute("href");
-            linksList.add(searchLink);
-            System.out.println(searchLink);
+        for (String keyword : keywordList) {
+            String namuSearchUrl = null;
+            try {
+                namuSearchUrl = "https://namu.wiki/w/" + URLEncoder.encode(keyword, "UTF-8").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(namuSearchUrl);
+            System.out.println(namuSearchUrl);
         }
-
 //        processKeywordsAndReferences("namu", keywordList, linksList);
 
         return null;
