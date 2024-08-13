@@ -58,6 +58,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_PROFILE_IMG(5012,HttpStatus.BAD_REQUEST.value(), "잘못된 이미지 파일입니다."),
     UPLOAD_FAIL(5013,HttpStatus.BAD_REQUEST.value(), "파일 업로드에 실패했습니다. 인터넷 연결을 확인하거나, 나중에 다시 시도해 주세요."),
     INVALID_USER_DB_VALUE(5014,HttpStatus.BAD_REQUEST.value(), "유저 정보에 오류가 발생했습니다. 관리자에게 문의해주세요."),
+    NULL_USER_VALUE(5015,HttpStatus.BAD_REQUEST.value(), "요청에 필요한 값이 존재하지 않습니다."),
+    EMPTY_USER_VALUE(5016,HttpStatus.BAD_REQUEST.value(), "요청에 필요한 값이 비어있습니다.."),
 
     /**
      * 6000: Debate 오류
