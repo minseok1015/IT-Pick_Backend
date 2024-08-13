@@ -78,6 +78,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다."),
     INVALID_VOTE_VALUE(7001,HttpStatus.BAD_REQUEST.value(), "투표 요청에서 잘못된 값이 존재합니다."),
     VOTE_OPTION_NOT_FOUND(7002,HttpStatus.BAD_REQUEST.value(), "해당 투표 옵션이 존재하지 않습니다."),
+    INVALID_VOTE_DELETE_VALUE(7003,HttpStatus.BAD_REQUEST.value(), "투표 취소 요청에서 잘못된 값이 존재합니다."),
+    USER_VOTE_CHOICE_NOT_FOUND(7004,HttpStatus.BAD_REQUEST.value(), "투표하지 않았기 때문에 취소할 수 없습니다."),
 
 
 
