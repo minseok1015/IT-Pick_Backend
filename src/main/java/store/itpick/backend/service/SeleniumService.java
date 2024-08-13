@@ -3,6 +3,11 @@ package store.itpick.backend.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -20,6 +25,7 @@ import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.util.Redis;
 import store.itpick.backend.util.SeleniumUtil;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.Duration;
@@ -195,6 +201,43 @@ public class SeleniumService {
 
         return null;
     }
+
+    public List<Reference> useDriverForGoogle(String url) throws IOException {
+        Connection conn = Jsoup.connect(url);
+        Document doc = conn.get();
+        Elements eles = doc.select("item title");
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+        for (Element ele : eles) {
+            System.out.println("keyword : "+ ele.text());
+            keywordList.add(ele.text());
+        }
+
+
+        /**구글 관련 Redis저장**/
+//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String googleSearchUrl = null;
+            try {
+                googleSearchUrl = "https://www.google.com/search?q=" + URLEncoder.encode(keyword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(googleSearchUrl);
+            System.out.println(googleSearchUrl);
+        }
+
+
+
+        processKeywordsAndReferences("google", keywordList, linksList);
+
+        return null;
+    }
+
 
     private List<Reference> SearchReference(List<Keyword> keywords, List<String> linksList ) {
         final String emptyImg="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
