@@ -89,4 +89,31 @@ public class UserController {
         return new BaseResponse<>(new ProfileImgResponse(imgUrl));
     }
 
+
+    @GetMapping("/nickname")
+    public BaseResponse<GetUserResponse.Nickname> getNickname(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getNickname(userId));
+    }
+
+    @GetMapping("/email")
+    public BaseResponse<GetUserResponse.Email> getEmail(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getEmail(userId));
+    }
+
+    @GetMapping("/birth-date")
+    public BaseResponse<GetUserResponse.BirthDate> getBirthDate(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getBirthDate(userId));
+    }
+
+    @GetMapping("/liked-topics")
+    public BaseResponse<GetUserResponse.LikedTopicList> getLikedTopicList(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getLikedTopicList(userId));
+    }
+
+    @GetMapping("/profile-img")
+    public BaseResponse<GetUserResponse.ProfileImg> getProfileImg(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getProfileImg(userId));
+    }
+
+
 }
