@@ -5,13 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.dto.debate.*;
+import store.itpick.backend.dto.vote.DeleteUserVoteChoiceRequest;
 import store.itpick.backend.dto.vote.PostUserVoteChoiceRequest;
 import store.itpick.backend.service.DebateService;
 import store.itpick.backend.service.VoteService;
@@ -67,6 +65,17 @@ public class DebateController {
 
         voteService.createUserVoteChoice(postUserVoteChoiceRequest);
 
+        return new BaseResponse<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/vote")
+    public BaseResponse<Object> deleteUserVoteChoice(@Valid @RequestBody DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest, BindingResult bindingResult){
+
+        if (bindingResult.hasErrors()) {
+            throw new DebateException(INVALID_VOTE_DELETE_VALUE, getErrorMessages(bindingResult));
+        }
+
+        voteService.deleteUserVoteChoice(deleteUserVoteChoiceRequest);
         return new BaseResponse<>(HttpStatus.OK);
     }
 }

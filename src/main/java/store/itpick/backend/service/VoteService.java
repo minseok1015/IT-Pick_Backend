@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.exception.VoteException;
 import store.itpick.backend.dto.debate.VoteOptionRequest;
+import store.itpick.backend.dto.vote.DeleteUserVoteChoiceRequest;
 import store.itpick.backend.dto.vote.PostUserVoteChoiceRequest;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.dto.vote.PostVoteResponse;
@@ -86,5 +87,23 @@ public class VoteService {
                 .build();
 
         userVoteChoiceRepository.save(userVoteChoice);
+    }
+
+    @Transactional
+    public void deleteUserVoteChoice(DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest){
+
+        User user = userRepository.findById(deleteUserVoteChoiceRequest.getUserId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        VoteOption voteOption = voteOptionRepository.findById(deleteUserVoteChoiceRequest.getVoteOptionId())
+                .orElseThrow(() -> new VoteException(VOTE_OPTION_NOT_FOUND));
+
+        UserVoteChoice userVoteChoice = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
+
+        if (userVoteChoice != null) {
+            userVoteChoiceRepository.delete(userVoteChoice);
+        } else {
+            throw new VoteException(USER_VOTE_CHOICE_NOT_FOUND);
+        }
     }
 }
