@@ -230,7 +230,7 @@ public class SeleniumService {
 
 
 
-        processKeywordsAndReferences("google", keywordList, linksList);
+//        processKeywordsAndReferences("google", keywordList, linksList);
 
         return null;
     }
