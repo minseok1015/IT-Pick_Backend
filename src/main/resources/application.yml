@@ -67,9 +67,14 @@ spring:
     url: ${DATASOURCE_URL_DEV}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
+    #    url: jdbc:h2:tcp://localhost/~/itpick
+    #    username: sa
+    ##    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
     dbcp2:
       validation-query: select 1
+  #    hikari:
+  #      driver-class-name: org.h2.Driver
   sql:
     init:
       platform: mysql
@@ -80,6 +85,22 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
 
 ---
 

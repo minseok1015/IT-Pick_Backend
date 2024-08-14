@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.itpick.backend.common.exception.ReferenceException;
 import store.itpick.backend.common.response.BaseErrorResponse;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.common.response.status.ResponseStatus;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.BAD_REQUEST;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
 
 @RestController
 @RequestMapping("/rank")
@@ -44,9 +45,6 @@ public class RankController {
 
     @Autowired
     private KeywordService keywordService;
-
-    @Autowired
-    private SchedulerService schedulerService;
 
 
     // 최대 재시도 횟수와 재시도 간격 (초)
@@ -99,8 +97,7 @@ public class RankController {
         RankResponseDTO rankResponse = rankService.getReferenceByKeyword(community, period, keyword);
 
         if (rankResponse == null) {
-            // 키워드가 없거나 커뮤니티/기간이 없을 경우 적절한 응답 처리
-            return new BaseResponse<>(null);
+            throw new ReferenceException(EMPTY_REFERENCE);
         }
 
         return new BaseResponse<>(rankResponse);
@@ -121,10 +118,7 @@ public class RankController {
         keywordService.performDailyTasksZum();
     }
 
-    @GetMapping("/update")
-    public void update() {
-        schedulerService.performHourlyTasks();
-    }
+
 
     @GetMapping("/naver")
     public List<Reference> getRankFromSignal() {
@@ -136,6 +130,12 @@ public class RankController {
     public List<Reference> getRankFromMnate() {
         String url = "https://m.nate.com/";
         return executeWithRetries(() -> seleniumService.useDriverForMnate(url), "Mnate 데이터 수집");
+    }
+
+    @GetMapping("/google")
+    public List<Reference> getRankFromGoogle() {
+        String url = "https://trends.google.co.kr/trending/rss?geo=KR";
+        return executeWithRetries(() -> seleniumService.useDriverForGoogle(url), "Google 데이터 수집");
     }
 
     @GetMapping("")

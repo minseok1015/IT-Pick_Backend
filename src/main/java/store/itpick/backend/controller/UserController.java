@@ -78,7 +78,7 @@ public class UserController {
         return new BaseResponse<>(null);
     }
 
-    @PostMapping("/profile-img")
+    @PatchMapping("/profile-img")
     public BaseResponse<ProfileImgResponse> changeProfileImg(@PreAuthorize long userId,@RequestParam("file") MultipartFile file){
         String previousImgUrl = userService.getProfileImgUrl(userId);
         if (previousImgUrl != null)  {
@@ -88,5 +88,32 @@ public class UserController {
         userService.changeProfileImg(userId, imgUrl);
         return new BaseResponse<>(new ProfileImgResponse(imgUrl));
     }
+
+
+    @GetMapping("/nickname")
+    public BaseResponse<GetUserResponse.Nickname> getNickname(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getNickname(userId));
+    }
+
+    @GetMapping("/email")
+    public BaseResponse<GetUserResponse.Email> getEmail(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getEmail(userId));
+    }
+
+    @GetMapping("/birth-date")
+    public BaseResponse<GetUserResponse.BirthDate> getBirthDate(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getBirthDate(userId));
+    }
+
+    @GetMapping("/liked-topics")
+    public BaseResponse<GetUserResponse.LikedTopicList> getLikedTopicList(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getLikedTopicList(userId));
+    }
+
+    @GetMapping("/profile-img")
+    public BaseResponse<GetUserResponse.ProfileImg> getProfileImg(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getProfileImg(userId));
+    }
+
 
 }

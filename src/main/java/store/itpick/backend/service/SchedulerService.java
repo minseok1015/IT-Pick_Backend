@@ -3,6 +3,7 @@ package store.itpick.backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.TimeoutException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile("!local") // 'localDB' 프로파일에서는 이 빈이 로드되지 않습니다.
 public class SchedulerService {
 
     private final SeleniumService seleniumService;
@@ -86,6 +88,7 @@ public class SchedulerService {
     @Transactional
     public void performHourlyTasks() {
         try {
+            seleniumService.initDriver();
             executeWithRetries(() -> seleniumService.useDriverForNaver("https://www.signal.bz/"), "Naver 데이터 수집");
             executeWithRetries(() -> seleniumService.useDriverForMnate("https://m.nate.com/"), "Nate 데이터 수집");
             executeWithRetries(() -> seleniumService.useDriverForZum("https://news.zum.com/"), "Zum 데이터 수집");
@@ -96,6 +99,8 @@ public class SchedulerService {
 
         } catch (Exception e) {
             log.error("Error during hourly task", e);
+        }finally {
+            seleniumService.quitDriver();
         }
     }
 
@@ -111,7 +116,6 @@ public class SchedulerService {
 
         redis.saveDay();
         redis.saveTotalRanking(PeriodType.BY_DAY);
-
 
         /** DB에 있는 18시 검색어들을 Daily검색어로 Reference 참조할 수 있도록 함 **/
         keywordService.performDailyTasksNate();

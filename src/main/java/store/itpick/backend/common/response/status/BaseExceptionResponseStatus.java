@@ -58,6 +58,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_PROFILE_IMG(5012,HttpStatus.BAD_REQUEST.value(), "잘못된 이미지 파일입니다."),
     UPLOAD_FAIL(5013,HttpStatus.BAD_REQUEST.value(), "파일 업로드에 실패했습니다. 인터넷 연결을 확인하거나, 나중에 다시 시도해 주세요."),
     INVALID_USER_DB_VALUE(5014,HttpStatus.BAD_REQUEST.value(), "유저 정보에 오류가 발생했습니다. 관리자에게 문의해주세요."),
+    NULL_USER_VALUE(5015,HttpStatus.BAD_REQUEST.value(), "요청에 필요한 값이 존재하지 않습니다."),
+    EMPTY_USER_VALUE(5016,HttpStatus.BAD_REQUEST.value(), "요청에 필요한 값이 비어있습니다.."),
 
     /**
      * 6000: Debate 오류
@@ -78,6 +80,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다."),
     INVALID_VOTE_VALUE(7001,HttpStatus.BAD_REQUEST.value(), "투표 요청에서 잘못된 값이 존재합니다."),
     VOTE_OPTION_NOT_FOUND(7002,HttpStatus.BAD_REQUEST.value(), "해당 투표 옵션이 존재하지 않습니다."),
+    INVALID_VOTE_DELETE_VALUE(7003,HttpStatus.BAD_REQUEST.value(), "투표 취소 요청에서 잘못된 값이 존재합니다."),
+    USER_VOTE_CHOICE_NOT_FOUND(7004,HttpStatus.BAD_REQUEST.value(), "투표하지 않았기 때문에 취소할 수 없습니다."),
 
 
 
@@ -85,7 +89,14 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
      * 8000: Reference 오류
      */
     INVALID_REFERENCE(8000,HttpStatus.BAD_REQUEST.value(),"잘못된 관련자료 요청입니다"),
-    EMPTY_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료가 비어있습니다");
+    NO_Search_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료를 뉴스에서 검색하지 못하였습니다"),
+
+    EMPTY_REFERENCE(8002,HttpStatus.BAD_REQUEST.value(),"해당 키워드의 관련자료를 찾지 못하였습니다"),
+
+    NO_SEARCH_KEYWORD(8004,HttpStatus.BAD_REQUEST.value(),"관련된 키워드를 찾지 못했습니다");
+
+
+
 
 
 

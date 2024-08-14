@@ -13,7 +13,7 @@ import store.itpick.backend.repository.KeywordRepository;
 import java.util.List;
 import java.util.Optional;
 
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.EMPTY_REFERENCE;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.NO_Search_REFERENCE;
 
 
 //관련자료 조회하는 Service
@@ -71,7 +71,7 @@ public class RankService {
     }
     private void isValidReference(String newsTitle){
         if(newsTitle.equals("No search")){
-            throw new ReferenceException(EMPTY_REFERENCE);
+            throw new ReferenceException(NO_Search_REFERENCE);
         }
     }
 

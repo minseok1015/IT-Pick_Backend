@@ -43,6 +43,8 @@ public class S3ImageBucketService {
 
     // 프로필 이미지 업로드
     public String saveProfileImg(MultipartFile uploadFile) {
+        validateIsNull(uploadFile);
+        validateIsEmpty(uploadFile);
         // img url 반환
         return saveImg(uploadFile, PROFILE_IMG_DIR);
     }
@@ -108,6 +110,17 @@ public class S3ImageBucketService {
         else {
             // URL이 아닌 경우
             throw new UserException(INVALID_USER_DB_VALUE);
+        }
+    }
+
+    public void validateIsNull(Object value){
+        if (value == null) {
+            throw new UserException(NULL_USER_VALUE);
+        }
+    }
+    public void validateIsEmpty(MultipartFile value) {
+        if (value.isEmpty()) {
+            throw new UserException(EMPTY_USER_VALUE);
         }
     }
 

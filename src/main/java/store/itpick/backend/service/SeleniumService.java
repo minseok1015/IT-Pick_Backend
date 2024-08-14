@@ -3,10 +3,12 @@ package store.itpick.backend.service;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -20,6 +22,7 @@ import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.util.Redis;
 import store.itpick.backend.util.SeleniumUtil;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.Duration;
@@ -43,8 +46,7 @@ public class SeleniumService {
 
 
     // ChromeDriver 연결 (WEB_DRIVER_PATH 값 주입되고 사용해야 하므로 PostConstruct)
-    @PostConstruct
-    private void initDriver() {
+    public void initDriver() {
         seleniumUtil.initDriver();
         driver = seleniumUtil.getDriver();
     }
@@ -195,6 +197,43 @@ public class SeleniumService {
 
         return null;
     }
+
+    public List<Reference> useDriverForGoogle(String url) throws IOException {
+        Connection conn = Jsoup.connect(url);
+        Document doc = conn.get();
+        Elements eles = doc.select("item title");
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+        for (Element ele : eles) {
+            System.out.println("keyword : "+ ele.text());
+            keywordList.add(ele.text());
+        }
+
+
+        /**구글 관련 Redis저장**/
+//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String googleSearchUrl = null;
+            try {
+                googleSearchUrl = "https://www.google.com/search?q=" + URLEncoder.encode(keyword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(googleSearchUrl);
+            System.out.println(googleSearchUrl);
+        }
+
+
+
+//        processKeywordsAndReferences("google", keywordList, linksList);
+
+        return null;
+    }
+
 
     private List<Reference> SearchReference(List<Keyword> keywords, List<String> linksList ) {
         final String emptyImg="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -382,42 +421,90 @@ public class SeleniumService {
      나무위키 크롤링
      **/
 
+//    public String useDriverForNamuwiki(String url) {
+//        driver.get(url);
+//
+//        Actions actions = new Actions(driver);
+//
+//        // class명으로 하면 되지만, 계속 변경됨
+////        WebElement webElement = driver.findElement(By.className("jM2TE0NV"));
+////        actions.moveToElement(webElement).perform();
+////        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.className("_0SwtPj9H")));
+////        System.out.println(ul.getText());
+//
+//        // xpath
+////        WebElement webElement = driver.findElement(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div"));
+////        actions.moveToElement(webElement).perform();
+////        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
+////        System.out.println(ul.getText());
+//
+//        // until을 통해 준비되는대로 바로 실행
+//        // 다만, 나무위키의 div 개수가 동적으로 변경되어서 xpath를 어떻게 할지 고민
+////        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div")));
+//        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
+//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div")));
+//        actions.moveToElement(webElement).perform();
+//
+////        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
+////                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div/ul")));
+//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
+//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
+//        System.out.println(ul.getText());
+//
+//        return null;
+//    }
+
+
     public String useDriverForNamuwiki(String url) {
         driver.get(url);
 
         Actions actions = new Actions(driver);
 
-        // class명으로 하면 되지만, 계속 변경됨
-//        WebElement webElement = driver.findElement(By.className("jM2TE0NV"));
-//        actions.moveToElement(webElement).perform();
-//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.className("_0SwtPj9H")));
-//        System.out.println(ul.getText());
 
-        // xpath
-//        WebElement webElement = driver.findElement(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div"));
-//        actions.moveToElement(webElement).perform();
-//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(3))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
-//        System.out.println(ul.getText());
+        WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div > div > div > div > div > div > div > ul a span")));
+        actions.moveToElement(button).perform();
 
-        // until을 통해 준비되는대로 바로 실행
-        // 다만, 나무위키의 div 개수가 동적으로 변경되어서 xpath를 어떻게 할지 고민
-//        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div")));
-        WebElement webElement = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div")));
-        actions.moveToElement(webElement).perform();
+        // 키워드 수집
+        List<WebElement> webElementByKeyword = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a span"));
 
-//        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
-//                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[4]/div[2]/div/ul")));
-        WebElement ul = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"app\"]/div[1]/div[2]/div/div[6]/div[4]/div/ul")));
-        System.out.println(ul.getText());
+        List<String> keywordList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            WebElement element = webElementByKeyword.get(i);
+            String keyword = element.getText();
+            if(keyword.isEmpty()){
+                System.out.println("데이터를 다 못찾았습니다");
+                throw new TimeoutException();
+            }
+            keywordList.add(keyword);
+            System.out.println(keyword);
+        }
+
+        /**나무위키 관련 Redis저장**/
+
+//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String namuSearchUrl = null;
+            try {
+                namuSearchUrl = "https://namu.wiki/w/" + URLEncoder.encode(keyword, "UTF-8").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(namuSearchUrl);
+            System.out.println(namuSearchUrl);
+        }
+//        processKeywordsAndReferences("namu", keywordList, linksList);
 
         return null;
-    }
 
+
+    }
 }
 
 

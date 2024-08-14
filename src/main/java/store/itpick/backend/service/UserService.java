@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.dto.auth.JwtDTO;
+import store.itpick.backend.dto.user.GetUserResponse;
 import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.LikedTopic;
 import store.itpick.backend.model.User;
@@ -16,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.EMPTY_USER_VALUE;
+import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.NULL_USER_VALUE;
 import static store.itpick.backend.util.UserUtils.getUser;
 
 @Slf4j
@@ -30,6 +34,7 @@ public class UserService {
 
 
     public void changeNickname(long userId, String nickname) {
+        validateIsNull(userId);
         User user = getUser(userId, userRepository);
         user.setNickname(nickname);
         user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
@@ -46,6 +51,10 @@ public class UserService {
 
     public void changeLikedTopics(long userId, List<String> likedTopicList) {
         User user = getUser(userId, userRepository);
+
+        validateIsNull(likedTopicList);
+        validateIsEmpty(likedTopicList);
+
 
         // 기존 LikedTopic 목록을 맵으로 변환
         Map<String, LikedTopic> existingLikedTopicsMap = user.getLikedTopics()
@@ -100,6 +109,7 @@ public class UserService {
     }
 
     public void changePassword(long userId, String password) {
+        validateIsNull(password);
         User user = getUser(userId, userRepository);
         // Encrypt password
         user.setPassword(passwordEncoder.encode(password));
@@ -118,8 +128,52 @@ public class UserService {
     }
 
 
+
+    // Get
+    public GetUserResponse.Nickname getNickname(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.Nickname(user.getNickname());
+    }
+
+    public GetUserResponse.Email getEmail(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.Email(user.getEmail());
+    }
+
+    public GetUserResponse.BirthDate getBirthDate(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.BirthDate(user.getBirthDate());
+    }
+
+    public GetUserResponse.LikedTopicList getLikedTopicList(long userId) {
+        User user = getUser(userId, userRepository);
+        List<String> existingLikedTopicList = user.getLikedTopics()
+                .stream()
+                .map(LikedTopic::getLiked_topic) // LikedTopic 객체의 liked_topic 필드를 추출
+                .collect(Collectors.toList());  // List<String>으로 수집
+
+        return new GetUserResponse.LikedTopicList(existingLikedTopicList);
+    }
+
+    public GetUserResponse.ProfileImg getProfileImg(long userId) {
+        User user = getUser(userId, userRepository);
+        return new GetUserResponse.ProfileImg(user.getImageUrl());
+    }
+
+
     public String getProfileImgUrl(long userId) {
         User user = getUser(userId, userRepository);
         return user.getImageUrl();
+    }
+
+    public void validateIsNull(Object value){
+        if (value == null) {
+            throw new UserException(NULL_USER_VALUE);
+        }
+    }
+    public void validateIsEmpty(List<String> value) {
+        if (value.isEmpty()) {
+            throw new UserException(EMPTY_USER_VALUE);
+        }
     }
 }
