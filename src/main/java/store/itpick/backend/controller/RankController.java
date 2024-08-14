@@ -132,6 +132,12 @@ public class RankController {
         return executeWithRetries(() -> seleniumService.useDriverForMnate(url), "Mnate 데이터 수집");
     }
 
+    @GetMapping("/google")
+    public List<Reference> getRankFromGoogle() {
+        String url = "https://trends.google.co.kr/trending/rss?geo=KR";
+        return executeWithRetries(() -> seleniumService.useDriverForGoogle(url), "Google 데이터 수집");
+    }
+
     @GetMapping("")
 //    public BaseResponse<GetRankingListResponse> getRankingList(@RequestParam String community, @RequestParam String period) {
     public ResponseStatus getRankingList(@RequestParam String community, @RequestParam String period, @RequestParam String date) {
