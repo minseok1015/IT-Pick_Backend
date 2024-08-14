@@ -27,7 +27,7 @@ public class RankService {
 
     public RankResponseDTO getReferenceByKeyword(String community, String period, String keyword) {
         List<String> communitiesToCheck = "total".equals(community)
-                ? List.of("naver", "zum", "nate")
+                ? List.of("naver", "zum", "nate", "google", "namuwiki")
                 : List.of(community);
 
         for (String comm : communitiesToCheck) {

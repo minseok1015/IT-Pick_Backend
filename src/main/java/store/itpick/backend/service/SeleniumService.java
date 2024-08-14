@@ -43,8 +43,6 @@ public class SeleniumService {
     private final ReferenceService referenceService;
     private final CommunityPeriodService communityPeriodService;
 
-
-
     // ChromeDriver 연결 (WEB_DRIVER_PATH 값 주입되고 사용해야 하므로 PostConstruct)
     public void initDriver() {
         seleniumUtil.initDriver();
@@ -52,6 +50,7 @@ public class SeleniumService {
     }
 
     public List<Reference> useDriverForZum(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
         Actions actions = new Actions(driver);
@@ -109,9 +108,8 @@ public class SeleniumService {
         return null;
     }
 
-
-
     public List<Reference> useDriverForNaver(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
         try {
@@ -143,8 +141,8 @@ public class SeleniumService {
 
         return null;
     }
-
     public List<Reference> useDriverForMnate(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
         Actions actions = new Actions(driver);
 
@@ -212,7 +210,7 @@ public class SeleniumService {
 
 
         /**구글 관련 Redis저장**/
-//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+        redis.saveRealtime(CommunityType.GOOGLE, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
         List<String> linksList = new ArrayList<>();
@@ -459,6 +457,7 @@ public class SeleniumService {
 
 
     public String useDriverForNamuwiki(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
         Actions actions = new Actions(driver);
@@ -484,8 +483,7 @@ public class SeleniumService {
         }
 
         /**나무위키 관련 Redis저장**/
-
-//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+        redis.saveRealtime(CommunityType.NAMUWIKI, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
         List<String> linksList = new ArrayList<>();
