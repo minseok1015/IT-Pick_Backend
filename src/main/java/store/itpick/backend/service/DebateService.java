@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.exception.AuthException;
+import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.jwt.JwtProvider;
@@ -34,10 +35,13 @@ public class DebateService {
     @Transactional
     public PostDebateResponse createDebate(PostDebateRequest postDebateRequest) {
 
+        User user = userRepository.findById(postDebateRequest.getUserId())
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
         Keyword keyword = keywordRepository.findById(postDebateRequest.getKeywordId())
                 .orElseThrow(() -> new DebateException(KEYWORD_NOT_FOUND));
 
-        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).build();
+        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).user(user).build();
 
         debate = debateRepository.save(debate);
 

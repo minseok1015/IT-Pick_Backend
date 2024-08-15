@@ -66,4 +66,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserVoteChoice> userVoteChoices;
+
+    @OneToMany(mappedBy = "user")
+    private List<Debate> debates;
 }
