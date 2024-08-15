@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface CommentHeartRepository extends JpaRepository<CommentHeart, Long> {
     CommentHeart findByUserAndComment(User user, Comment comment);
+    boolean existsByCommentAndUser_userId(Comment comment, Long userId);
 }

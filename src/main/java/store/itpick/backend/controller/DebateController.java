@@ -78,4 +78,15 @@ public class DebateController {
         voteService.deleteUserVoteChoice(deleteUserVoteChoiceRequest);
         return new BaseResponse<>(HttpStatus.OK);
     }
+
+    @GetMapping("/details")
+    public BaseResponse<GetDebateResponse> getDebate(
+            @RequestParam Long debateId,
+            @RequestHeader("Authorization") String token) {
+
+        String jwtToken = token.substring(7);
+
+        GetDebateResponse debateResponse = debateService.getDebate(debateId, jwtToken);
+        return new BaseResponse<>(debateResponse);
+    }
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.exception.AuthException;
 import store.itpick.backend.common.exception.UserException;
+import store.itpick.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
+import store.itpick.backend.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
 import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.jwt.JwtProvider;
@@ -30,7 +32,10 @@ public class DebateService {
     private final CommentRepository commentRepository;
     private final CommentHeartRepository commentHeartRepository;
     private final UserRepository userRepository;
+    private final UserVoteChoiceRepository userVoteChoiceRepository;
+    private final VoteOptionRepository voteOptionRepository;
     private final VoteService voteService;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public PostDebateResponse createDebate(PostDebateRequest postDebateRequest) {
@@ -120,4 +125,75 @@ public class DebateService {
             return new PostCommentHeartResponse(commentHeart.getCommentHeartId());
         }
     }
+
+    @Transactional
+    public GetDebateResponse getDebate(Long debateId, String token) {
+
+        if (jwtProvider.isExpiredToken(token)) {
+            throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
+        }
+
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        Debate debate = debateRepository.findById(debateId)
+                .orElseThrow(() -> new DebateException(DEBATE_NOT_FOUND));
+
+        User user = debate.getUser();
+
+        boolean userVoted = false;
+        String userVoteOptionText = null;
+
+        for (VoteOption voteOption : debate.getVote().getVoteOptions()) {
+            UserVoteChoice userVoteChoice = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
+            if (userVoteChoice != null) {
+                userVoted = true;
+                userVoteOptionText = voteOption.getOptionText();
+                break;
+            }
+        }
+
+        List<GetDebateResponse.VoteOptionResponse> voteOptions = voteOptionRepository.findByVote(debate.getVote()).stream()
+                .map(option -> GetDebateResponse.VoteOptionResponse.builder()
+                        .optionText(option.getOptionText())
+                        .imgUrl(option.getImgUrl())
+                        .voteCount(option.getUserVoteChoices().size())
+                        .build())
+                .toList();
+
+        List<GetDebateResponse.CommentResponse> comments = commentRepository.findByDebate(debate).stream()
+                .map(comment -> {
+                    boolean userHearted = commentHeartRepository.existsByCommentAndUser_userId(comment, userId);
+
+                    return GetDebateResponse.CommentResponse.builder()
+                            .commentId(comment.getCommentId())
+                            .commentText(comment.getComment())
+                            .userNickname(comment.getUser().getNickname())
+                            .userImgUrl(comment.getUser().getImageUrl())
+                            .createAt(comment.getCreateAt())
+                            .commentHeartCount(comment.getCommentHearts().size())
+                            .userHearted(userHearted)
+                            .build();
+                })
+                .toList();
+
+
+        return GetDebateResponse.builder()
+                .debateId(debate.getDebateId())
+                .title(debate.getTitle())
+                .content(debate.getContent())
+                .hits(debate.getHits())
+                .onTrend(debate.isOnTrend())
+                .status(debate.getStatus())
+                .createAt(debate.getCreateAt())
+                .updateAt(debate.getUpdateAt())
+                .keyword(debate.getKeyword().getKeyword())
+                .userNickname(debate.getUser().getNickname())
+                .userImgUrl(debate.getUser().getImageUrl())
+                .voteOptions(voteOptions)
+                .comments(comments)
+                .userVoted(userVoted)
+                .userVoteOptionText(userVoteOptionText)
+                .build();
+    }
+
 }
