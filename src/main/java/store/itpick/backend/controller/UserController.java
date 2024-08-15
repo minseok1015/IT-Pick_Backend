@@ -115,5 +115,15 @@ public class UserController {
         return new BaseResponse<>(userService.getProfileImg(userId));
     }
 
+    @GetMapping("/my-page")
+    public BaseResponse<GetMyPageResponse.MyPage> getMypage(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getMyPage(userId));
+    }
+
+    @GetMapping("/profile-edit")
+    public BaseResponse<GetMyPageResponse.ProfileEdit> getProfileEditPage(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getProfileEditPage(userId));
+    }
+
 
 }

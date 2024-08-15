@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.dto.auth.JwtDTO;
+import store.itpick.backend.dto.user.GetMyPageResponse;
 import store.itpick.backend.dto.user.GetUserResponse;
 import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.LikedTopic;
@@ -87,6 +88,8 @@ public class UserService {
                 likedTopicRepository.save(newLikedTopic);
             }
         }
+        //TODO 없는 토픽 id 넣을시 Exception throw 추가
+
         user.setUpdateAt(new Timestamp(System.currentTimeMillis()));
         userRepository.save(user);
     }
@@ -147,10 +150,7 @@ public class UserService {
 
     public GetUserResponse.LikedTopicList getLikedTopicList(long userId) {
         User user = getUser(userId, userRepository);
-        List<String> existingLikedTopicList = user.getLikedTopics()
-                .stream()
-                .map(LikedTopic::getLiked_topic) // LikedTopic 객체의 liked_topic 필드를 추출
-                .collect(Collectors.toList());  // List<String>으로 수집
+        List<String> existingLikedTopicList = getLikedTopicList(user);
 
         return new GetUserResponse.LikedTopicList(existingLikedTopicList);
     }
@@ -159,6 +159,45 @@ public class UserService {
         User user = getUser(userId, userRepository);
         return new GetUserResponse.ProfileImg(user.getImageUrl());
     }
+
+    // page
+
+
+    public GetMyPageResponse.MyPage getMyPage(long userId) {
+        User user = getUser(userId, userRepository);
+        return GetMyPageResponse.MyPage.builder()
+                .profileImg(user.getImageUrl())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .build();
+    }
+
+
+
+    public GetMyPageResponse.ProfileEdit getProfileEditPage(long userId) {
+        User user = getUser(userId, userRepository);
+        return GetMyPageResponse.ProfileEdit.builder()
+                .profileImg(user.getImageUrl())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .birth_date(user.getBirthDate())
+                .likedTopicList(getLikedTopicList(user))
+                .build();
+    }
+
+
+
+
+
+    public List<String> getLikedTopicList(User user){
+        return user.getLikedTopics()
+                .stream()
+                .map(LikedTopic::getLiked_topic) // LikedTopic 객체의 liked_topic 필드를 추출
+                .collect(Collectors.toList());  // List<String>으로 수집
+    }
+
+
+
 
 
     public String getProfileImgUrl(long userId) {
