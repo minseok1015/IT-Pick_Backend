@@ -52,7 +52,7 @@ public class Redis {
         for (int i = 0; i < realTimeKeyList.size(); i++) {
             int score = 10;
             redisTemplate.delete(dayKeyList.get(i));    // 기존 키 삭제
-            for (Object realTimeKeyword : Objects.requireNonNull(zSetOperations.reverseRange(realTimeKeyList.get(i), 0, 9))) {
+            for (Object realTimeKeyword : zSetOperations.reverseRange(realTimeKeyList.get(i), 0, 9)) {
                 zSetOperations.add(dayKeyList.get(i), realTimeKeyword, score--);
             }
         }
@@ -75,7 +75,7 @@ public class Redis {
             for (int i = 0; i < dayKeyList.size(); i++) {  // naver, nate, zum, google, namuwiki에 대하여
                 int score = 10;
                 redisTemplate.delete(weekKeyList.get(i));   // 기존 키 삭제
-                for (Object dayKeyword : Objects.requireNonNull(zSetOperations.reverseRange(dayKeyList.get(i), 0, 9))) {
+                for (Object dayKeyword : zSetOperations.reverseRange(dayKeyList.get(i), 0, 9)) {
                     if (!Boolean.TRUE.equals(zSetOperations.addIfAbsent(weekKeyList.get(i), dayKeyword, score))) {
                         zSetOperations.add(weekKeyList.get(i), dayKeyword, score + zSetOperations.score(weekKeyList.get(i), dayKeyword));
                     }
@@ -97,7 +97,7 @@ public class Redis {
         for (String key : keyList) {
             int weight = getWeight(key);
             int rank = 1;
-            for (Object keyword : Objects.requireNonNull(zSetOperations.reverseRange(key, 0, 9))) {
+            for (Object keyword : zSetOperations.reverseRange(key, 0, 9)) {
                 int score = (11 - rank) * weight;
                 if (!Boolean.TRUE.equals(zSetOperations.addIfAbsent(totalKey, keyword, score))) {
                     zSetOperations.add(totalKey, keyword, score + zSetOperations.score(totalKey, keyword));
@@ -113,10 +113,19 @@ public class Redis {
 
         List<RankDTO> rankingList = new ArrayList<>();
         long rank = 1;
-        for (Object object : Objects.requireNonNull(zSetOperations.reverseRange(key, 0, 9))) {
+        for (Object object : zSetOperations.reverseRange(key, 0, 9)) {
             String keyword = (String) object;
             RankListForKeyword rankingBadgeResponse = getRankingBadgeResponse(keyword, periodType, date);
-            rankingList.add(new RankDTO(keyword, rank++, rankingBadgeResponse.getNateRank(), rankingBadgeResponse.getNaverRank(), rankingBadgeResponse.getZumRank()));
+//            rankingList.add(new RankDTO(keyword, rank++, rankingBadgeResponse.getNateRank(), rankingBadgeResponse.getNaverRank(), rankingBadgeResponse.getZumRank()));
+            rankingList.add(RankDTO.builder()
+                    .keyword(keyword)
+                    .rank(rank++)
+                    .naverRank(rankingBadgeResponse.getNaverRank())
+                    .nateRank(rankingBadgeResponse.getNateRank())
+                    .zumRank(rankingBadgeResponse.getZumRank())
+                    .googleRank(rankingBadgeResponse.getGoogleRank())
+                    .namuwikiRank(rankingBadgeResponse.getNamuwikiRank())
+                    .build());
         }
 
         return new GetRankingListResponse(key, rankingList);
@@ -136,7 +145,13 @@ public class Redis {
             }
             rankByCommunity.add(rank + 1);
         }
-        return new RankListForKeyword(rankByCommunity.get(0), rankByCommunity.get(1), rankByCommunity.get(2));
+        return RankListForKeyword.builder()
+                .naverRank(rankByCommunity.get(0))
+                .nateRank(rankByCommunity.get(1))
+                .zumRank(rankByCommunity.get(2))
+                .googleRank(rankByCommunity.get(3))
+                .namuwikiRank(rankByCommunity.get(4))
+                .build();
     }
 
     private static String makeKey(CommunityType communityType, PeriodType periodType, String date) {
@@ -151,11 +166,9 @@ public class Redis {
 
     private static List<String> getKeyList(PeriodType periodType, String date) {
         List<String> keyList = new ArrayList<>();
-        keyList.add(makeKey(CommunityType.NAVER, periodType, date));
-        keyList.add(makeKey(CommunityType.NATE, periodType, date));
-        keyList.add(makeKey(CommunityType.ZUM, periodType, date));
-        keyList.add(makeKey(CommunityType.GOOGLE, periodType, date));
-        keyList.add(makeKey(CommunityType.NAMUWIKI, periodType, date));
+        for (CommunityType communityType : CommunityType.getAllExceptTotal()) {
+            keyList.add(makeKey(communityType, periodType, date));
+        }
         return keyList;
     }
 
