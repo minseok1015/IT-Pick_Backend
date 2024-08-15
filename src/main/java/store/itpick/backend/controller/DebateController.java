@@ -82,11 +82,17 @@ public class DebateController {
     @GetMapping("/details")
     public BaseResponse<GetDebateResponse> getDebate(
             @RequestParam Long debateId,
-            @RequestHeader("Authorization") String token) {
+            @RequestHeader("Authorization") String token,BindingResult bindingResult) {
 
         String jwtToken = token.substring(7);
 
+
+        if (bindingResult.hasErrors()) {
+            throw new DebateException(INVALID_GET_DEBATE_VALUE, getErrorMessages(bindingResult));
+        }
+
         GetDebateResponse debateResponse = debateService.getDebate(debateId, jwtToken);
+
         return new BaseResponse<>(debateResponse);
     }
 }

@@ -132,7 +132,7 @@ public class DebateService {
         if (jwtProvider.isExpiredToken(token)) {
             throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
         }
-
+        
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         Debate debate = debateRepository.findById(debateId)
