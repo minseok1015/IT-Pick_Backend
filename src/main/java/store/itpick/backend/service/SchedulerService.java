@@ -123,6 +123,8 @@ public class SchedulerService {
         keywordService.performDailyTasksNate();
         keywordService.performDailyTasksNaver();
         keywordService.performDailyTasksZum();
+        keywordService.performDailyTasksGoogle();
+        keywordService.performDailyTasksNamuwiki();
         log.info("Scheduled tasks completed DailyTask.");
     }
 
