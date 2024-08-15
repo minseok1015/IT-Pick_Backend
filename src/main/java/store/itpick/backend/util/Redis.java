@@ -23,27 +23,9 @@ public class Redis {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-//    @Scheduled(cron = "0/5 * * * * ?")
-//    public void save() {
-//        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-//        String key = makeKey("nate", PeriodType.BY_WEEK);
-//
-//        zSetOperations.add(key, "남자 양궁", 4);
-//        zSetOperations.add(key, "여자 양궁", 5);
-//        zSetOperations.add(key, "카온플", 2);
-//        zSetOperations.add(key, "요거트 스무디", 3);
-//        zSetOperations.add(key, "버즈", 6);
-//        redisTemplate.expire(key, Duration.ofSeconds(20));
-//    }
-
     public String saveRealtime(CommunityType communityType, PeriodType periodType, List<String> keywordList) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         String key = makeKey(communityType, periodType, "not needed");
-
-//        List<String> originalKeywordList = new ArrayList<>();
-//        for (Object originalKeyword : Objects.requireNonNull(zSetOperations.reverseRange(key, 0, 9))) {
-//            originalKeywordList.add((String) originalKeyword);
-//        }
 
         if (keywordList.size() >= 10) {
             redisTemplate.delete(key);
@@ -90,7 +72,7 @@ public class Redis {
         List<String> weekKeyList = getKeyList(PeriodType.BY_WEEK, mondayOfPreviousWeek.format(dateTimeFormatter));
 
         for (List<String> dayKeyList : dayKeyListOfPreviousWeek) {   // 지난주 월요일부터 일요일까지, 각 커뮤니티의 키 리스트
-            for (int i = 0; i < dayKeyList.size(); i++) {  // naver, nate, zum에 대하여
+            for (int i = 0; i < dayKeyList.size(); i++) {  // naver, nate, zum, google, namuwiki에 대하여
                 int score = 10;
                 redisTemplate.delete(weekKeyList.get(i));   // 기존 키 삭제
                 for (Object dayKeyword : Objects.requireNonNull(zSetOperations.reverseRange(dayKeyList.get(i), 0, 9))) {
@@ -111,7 +93,7 @@ public class Redis {
             case BY_WEEK -> DateUtils.localDateToString(DateUtils.getMondayOfPreviousWeek());
         };
         String totalKey = makeKey(CommunityType.TOTAL, periodType, date);
-        List<String> keyList = getKeyList(periodType, date); // key for naver, nate, zum
+        List<String> keyList = getKeyList(periodType, date); // key for naver, nate, zum, google, namuwiki
         for (String key : keyList) {
             int weight = getWeight(key);
             int rank = 1;
@@ -172,6 +154,8 @@ public class Redis {
         keyList.add(makeKey(CommunityType.NAVER, periodType, date));
         keyList.add(makeKey(CommunityType.NATE, periodType, date));
         keyList.add(makeKey(CommunityType.ZUM, periodType, date));
+        keyList.add(makeKey(CommunityType.GOOGLE, periodType, date));
+        keyList.add(makeKey(CommunityType.NAMUWIKI, periodType, date));
         return keyList;
     }
 
@@ -184,6 +168,12 @@ public class Redis {
         }
         if (key.startsWith(CommunityType.ZUM.value())) {
             return RankingWeight.ZUM.get();
+        }
+        if (key.startsWith(CommunityType.GOOGLE.value())) {
+            return RankingWeight.GOOGLE.get();
+        }
+        if (key.startsWith(CommunityType.NAMUWIKI.value())) {
+            return RankingWeight.NAMUWIKI.get();
         }
         return -1;
     }

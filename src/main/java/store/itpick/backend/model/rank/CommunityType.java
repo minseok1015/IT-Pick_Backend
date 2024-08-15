@@ -11,7 +11,9 @@ public enum CommunityType {
     TOTAL("total"),
     NAVER("naver"),
     NATE("nate"),
-    ZUM("zum");
+    ZUM("zum"),
+    GOOGLE("google"),
+    NAMUWIKI("namuwiki");
 
     private final String communityType;
 
