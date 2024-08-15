@@ -47,7 +47,7 @@ public class User {
     private String status;
 
     @Column(name = "create_at", nullable = false)
-    private java.sql.Timestamp createAt;
+    private Timestamp createAt;
 
     @Column(name = "update_at")
     private Timestamp updateAt;
@@ -57,4 +57,13 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<TermAgreement> termAgreements;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "user")
+    private List<CommentHeart> commentHearts;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserVoteChoice> userVoteChoices;
 }

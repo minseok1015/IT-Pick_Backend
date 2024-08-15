@@ -7,7 +7,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import store.itpick.backend.common.exception.UserException;
+import store.itpick.backend.common.exception.AuthException;
 import store.itpick.backend.common.exception.jwt.unauthorized.JwtExpiredTokenException;
 import store.itpick.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import store.itpick.backend.common.response.status.BaseExceptionResponseStatus;
@@ -18,7 +18,9 @@ import store.itpick.backend.dto.auth.RefreshResponse;
 import store.itpick.backend.dto.auth.PostUserRequest;
 import store.itpick.backend.dto.auth.PostUserResponse;
 import store.itpick.backend.jwt.JwtProvider;
+import store.itpick.backend.model.LikedTopic;
 import store.itpick.backend.model.User;
+import store.itpick.backend.repository.LikedTopicRepository;
 import store.itpick.backend.repository.UserRepository;
 
 
@@ -33,7 +35,6 @@ import java.util.Optional;
 import java.util.Random;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
-import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_TOKEN;
 
 
 @Slf4j
@@ -46,6 +47,7 @@ public class AuthService {
     private final JwtProvider jwtTokenProvider;
     private final MailService mailService;
     private final RedisService redisService;
+    private final LikedTopicRepository likedTopicRepository;
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
@@ -65,7 +67,7 @@ public class AuthService {
         try {
             user = userRepository.getUserByEmail(email).get();
         } catch (NoSuchElementException e) {
-            throw new UserException(EMAIL_NOT_FOUND);
+            throw new AuthException(EMAIL_NOT_FOUND);
         }
         long userId = user.getUserId();
 
@@ -85,7 +87,7 @@ public class AuthService {
     private void validatePassword(String password, long userId) {
         String encodedPassword = userRepository.getUserByUserId(userId).get().getPassword();
         if (!passwordEncoder.matches(password, encodedPassword)) {
-            throw new UserException(PASSWORD_NO_MATCH);
+            throw new AuthException(PASSWORD_NO_MATCH);
         }
     }
 
@@ -107,6 +109,18 @@ public class AuthService {
 
         user = userRepository.save(user);
 
+        if (postUserRequest.getLikedTopics() != null) {
+            for (String likedTopic : postUserRequest.getLikedTopics()) {
+                LikedTopic newLikedTopic = LikedTopic.builder()
+                        .user(user)
+                        .liked_topic(likedTopic)
+                        .status("active")
+                        .createAt(Timestamp.valueOf(LocalDateTime.now()))
+                        .build();
+                likedTopicRepository.save(newLikedTopic);
+            }
+        }
+
         return new PostUserResponse(user.getUserId());
     }
 
@@ -126,7 +140,7 @@ public class AuthService {
         try {
             user = userRepository.getUserByEmail(email).get();
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new UserException(EMAIL_NOT_FOUND);
+            throw new AuthException(EMAIL_NOT_FOUND);
         }
         long userId = user.getUserId();
 
@@ -141,7 +155,7 @@ public class AuthService {
         try {
             user = userRepository.getUserByUserId(userId).get();
         } catch (NoSuchElementException e) {
-            throw new UserException(USER_NOT_FOUND);
+            throw new AuthException(USER_NOT_FOUND);
         }
         user.setRefreshToken(null);
         userRepository.save(user);
@@ -158,26 +172,18 @@ public class AuthService {
             user.setStatus("deleted");
             userRepository.save(user);
         } else {
-            throw new UserException(USER_NOT_FOUND);
+            throw new AuthException(USER_NOT_FOUND);
         }
     }
 
     public void sendCodeToEmail(String toEmail) {
-        this.checkDuplicatedEmail(toEmail);
+        this.validateEmail(toEmail);
         String title = "ITPICK 회원가입을 위한 이메일 인증 번호입니다.";
         String authCode = this.createCode();
         mailService.sendEmail(toEmail, title, authCode);
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         redisService.setValues(AUTH_CODE_PREFIX + toEmail,
                 authCode, Duration.ofMillis(this.authCodeExpirationMillis));
-    }
-
-    private void checkDuplicatedEmail(String email){
-        Optional<User> user = userRepository.getUserByEmail(email);
-        if(user.isPresent()){
-            log.debug("MemberServiceImpl.checkDuplicatedEmail exception occur email: {}", email);
-            throw new UserException(BaseExceptionResponseStatus.MEMBER_EXISTS);
-        }
     }
 
     private String createCode() {
@@ -191,17 +197,17 @@ public class AuthService {
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
             log.debug("MemberService.createCode() exception occur");
-            throw new UserException(BaseExceptionResponseStatus.NO_SUCH_ALGORITHM);
+            throw new AuthException(BaseExceptionResponseStatus.NO_SUCH_ALGORITHM);
         }
     }
 
     public void verifiedCode(String email, String authCode) {
-        this.checkDuplicatedEmail(email);
+        this.validateEmail(email);
         String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
         boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
 
         if(!authResult){
-            throw new UserException(BaseExceptionResponseStatus.AUTH_CODE_IS_NOT_SAME);
+            throw new AuthException(BaseExceptionResponseStatus.AUTH_CODE_IS_NOT_SAME);
         }
     }
 
@@ -211,15 +217,15 @@ public class AuthService {
 
 
 
-    private void validateEmail(String email) {
+    public void validateEmail(String email) {
         if (userRepository.existsByEmailAndStatusIn(email, List.of("active", "dormant"))) {
-            throw new UserException(BaseExceptionResponseStatus.DUPLICATE_EMAIL);
+            throw new AuthException(BaseExceptionResponseStatus.DUPLICATE_EMAIL);
         }
     }
 
-    private void validateNickname(String nickname) {
+    public void validateNickname(String nickname) {
         if (userRepository.existsByNicknameAndStatusIn(nickname, List.of("active", "dormant"))) {
-            throw new UserException(BaseExceptionResponseStatus.DUPLICATE_NICKNAME);
+            throw new AuthException(BaseExceptionResponseStatus.DUPLICATE_NICKNAME);
         }
     }
 

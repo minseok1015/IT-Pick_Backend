@@ -24,5 +24,5 @@ else
 fi
 
 echo "$(date) - Deploying $JAR_PATH" | tee -a $LOG_FILE
-nohup java -jar $JAR_PATH >> $LOG_FILE 2>&1 --spring.profiles.active=local &
+nohup java -jar $JAR_PATH >> $LOG_FILE 2>&1 --spring.profiles.active=dev &
 

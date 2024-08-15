@@ -1,9 +1,14 @@
 spring:
   profiles:
     group:
-      "local": "localDB, devPort, secret, web-mvc"
-      "dev": "devDB, devPort, secret, web-mvc"
-      "prod": "prodDB, prodPort, secret, web-mvc"
+      "local": "localDB, devPort, secret, web-mvc, web-driver, aws"
+      "dev": "devDB, devPort, secret, web-mvc, web-driver, aws"
+      "prod": "prodDB, prodPort, secret, web-mvc, web-driver, aws"
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 ---
 
@@ -13,7 +18,7 @@ spring:
       on-profile: "localDB"
 
   datasource:
-    url: ${DATASOURCE_URL}
+    url: ${DATASOURCE_URL}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
 #    url: jdbc:h2:tcp://localhost/~/itpick
@@ -30,7 +35,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
@@ -50,10 +55,6 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 1800000
-  data:
-    redis:
-      host: localhost
-      port: 6379
 
 ---
 
@@ -63,12 +64,17 @@ spring:
       on-profile: "devDB"
 
   datasource:
-    url: ${DATASOURCE_URL_DEV}
+    url: ${DATASOURCE_URL_DEV}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
+    #    url: jdbc:h2:tcp://localhost/~/itpick
+    #    username: sa
+    ##    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
     dbcp2:
       validation-query: select 1
+  #    hikari:
+  #      driver-class-name: org.h2.Driver
   sql:
     init:
       platform: mysql
@@ -79,6 +85,22 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
 
 ---
 
@@ -88,7 +110,7 @@ spring:
       on-profile: "prodDB"
 
   datasource:
-    url: ${DATASOURCE_URL_PROD}
+    url: ${DATASOURCE_URL_PROD}?serverTimezone=Asia/Seoul
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -153,3 +175,31 @@ spring:
 
   messages:
     basename: errors
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "web-driver"
+
+web-driver:
+  path: ${WEB_DRIVER_PATH}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "aws"
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ${AWS_S3_BUCKET_ACCESS_KEY}
+      secretKey: ${AWS_S3_BUCKET_SECRET_KEY}
+

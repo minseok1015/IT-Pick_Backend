@@ -17,6 +17,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     BAD_REQUEST(2000, HttpStatus.BAD_REQUEST.value(), "유효하지 않은 요청입니다."),
     URL_NOT_FOUND(2001, HttpStatus.BAD_REQUEST.value(), "유효하지 않은 URL 입니다."),
     METHOD_NOT_ALLOWED(2002, HttpStatus.METHOD_NOT_ALLOWED.value(), "해당 URL에서는 지원하지 않는 HTTP Method 입니다."),
+//    WRONG_DATE(2003, HttpStatus.BAD_REQUEST.value(), "date 형식이 올바르지 않습니다."),
 
     /**
      * 3000: Server, Database 오류 (INTERNAL_SERVER_ERROR)
@@ -53,18 +54,48 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     UNABLE_TO_SEND_EMAIL(5012,HttpStatus.BAD_REQUEST.value(),"메일을 전송할 수 없습니다."),
     NO_SUCH_ALGORITHM(5009, HttpStatus.BAD_REQUEST.value(), "인증 번호 생성을 위한 알고리즘을 찾을 수 없습니다."),
     AUTH_CODE_IS_NOT_SAME(5010, HttpStatus.BAD_REQUEST.value(), "인증 번호가 일치하지 않습니다."),
-    MEMBER_EXISTS(5011,HttpStatus.BAD_REQUEST.value(), "이미 존재하는 회원입니다.");
+    MEMBER_EXISTS(5011,HttpStatus.BAD_REQUEST.value(), "이미 존재하는 회원입니다."),
+    INVALID_PROFILE_IMG(5012,HttpStatus.BAD_REQUEST.value(), "잘못된 이미지 파일입니다."),
+    UPLOAD_FAIL(5013,HttpStatus.BAD_REQUEST.value(), "파일 업로드에 실패했습니다. 인터넷 연결을 확인하거나, 나중에 다시 시도해 주세요."),
+    INVALID_USER_DB_VALUE(5014,HttpStatus.BAD_REQUEST.value(), "유저 정보에 오류가 발생했습니다. 관리자에게 문의해주세요."),
+    NULL_USER_VALUE(5015,HttpStatus.BAD_REQUEST.value(), "요청에 필요한 값이 존재하지 않습니다."),
+    EMPTY_USER_VALUE(5016,HttpStatus.BAD_REQUEST.value(), "요청에 필요한 값이 비어있습니다.."),
 
     /**
      * 6000: Debate 오류
      */
-
-
+    INVALID_DEBATE_VALUE(6000, HttpStatus.BAD_REQUEST.value(), "토론 생성 요청에서 잘못된 값이 존재합니다."),
+    INVALID_COMMENT_VALUE(6001,HttpStatus.BAD_REQUEST.value(), "댓글 생성 요청에서 잘못된 값이 존재합니다."),
+    DEBATE_NOT_FOUND(6002,HttpStatus.BAD_REQUEST.value(), "해당 토론이 존재하지 않습니다."),
+    COMMENT_PARENT_NOT_FOUND(6003,HttpStatus.BAD_REQUEST.value(), "부모 댓글이 존재하지 않습니다."),
+    INVALID_COMMENT_HEART_VALUE(6004,HttpStatus.BAD_REQUEST.value(), "댓글 좋아요 생성 요청에서 잘못된 값이 존재합니다."),
+    COMMENT_NOT_FOUND(6005,HttpStatus.BAD_REQUEST.value(), "해당 댓글이 존재하지 않습니다."),
+    KEYWORD_NOT_FOUND(6006,HttpStatus.BAD_REQUEST.value(), "해당 키워드가 존재하지 않습니다."),
 
 
     /**
      * 7000: Vote 오류
      */
+
+    INVALID_DEBATE_ID(7000,HttpStatus.BAD_REQUEST.value(), "유효하지 않은 DEBATE ID입니다."),
+    INVALID_VOTE_VALUE(7001,HttpStatus.BAD_REQUEST.value(), "투표 요청에서 잘못된 값이 존재합니다."),
+    VOTE_OPTION_NOT_FOUND(7002,HttpStatus.BAD_REQUEST.value(), "해당 투표 옵션이 존재하지 않습니다."),
+    INVALID_VOTE_DELETE_VALUE(7003,HttpStatus.BAD_REQUEST.value(), "투표 취소 요청에서 잘못된 값이 존재합니다."),
+    USER_VOTE_CHOICE_NOT_FOUND(7004,HttpStatus.BAD_REQUEST.value(), "투표하지 않았기 때문에 취소할 수 없습니다."),
+
+
+
+    /**
+     * 8000: Reference 오류
+     */
+    INVALID_REFERENCE(8000,HttpStatus.BAD_REQUEST.value(),"잘못된 관련자료 요청입니다"),
+    NO_Search_REFERENCE(8001,HttpStatus.BAD_REQUEST.value(),"관련자료를 뉴스에서 검색하지 못하였습니다"),
+
+    EMPTY_REFERENCE(8002,HttpStatus.BAD_REQUEST.value(),"해당 키워드의 관련자료를 찾지 못하였습니다"),
+
+    NO_SEARCH_KEYWORD(8004,HttpStatus.BAD_REQUEST.value(),"관련된 키워드를 찾지 못했습니다");
+
+
 
 
 
