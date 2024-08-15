@@ -50,4 +50,8 @@ public class Debate {
     @ManyToOne
     @JoinColumn(name = "keyword_id", nullable = false)
     private Keyword keyword;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
 }
