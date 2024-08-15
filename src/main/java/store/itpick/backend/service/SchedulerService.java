@@ -92,6 +92,8 @@ public class SchedulerService {
             executeWithRetries(() -> seleniumService.useDriverForNaver("https://www.signal.bz/"), "Naver 데이터 수집");
             executeWithRetries(() -> seleniumService.useDriverForMnate("https://m.nate.com/"), "Nate 데이터 수집");
             executeWithRetries(() -> seleniumService.useDriverForZum("https://news.zum.com/"), "Zum 데이터 수집");
+            executeWithRetries(() -> seleniumService.useDriverForGoogle("https://trends.google.co.kr/trending/rss?geo=KR"), "Google 데이터 수집");
+            executeWithRetries(() -> seleniumService.useDriverForNamuwiki("https://namu.wiki/"), "Namuwiki 데이터 수집");
 
             /** 일간 통합 랭킹 저장 **/
             redis.saveTotalRanking(PeriodType.BY_REAL_TIME);

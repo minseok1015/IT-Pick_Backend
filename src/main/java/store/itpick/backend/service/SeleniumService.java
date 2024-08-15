@@ -227,7 +227,7 @@ public class SeleniumService {
 
 
 
-//        processKeywordsAndReferences("google", keywordList, linksList);
+        processKeywordsAndReferences("google", keywordList, linksList);
 
         return null;
     }
@@ -497,7 +497,7 @@ public class SeleniumService {
             linksList.add(namuSearchUrl);
             System.out.println(namuSearchUrl);
         }
-//        processKeywordsAndReferences("namu", keywordList, linksList);
+        processKeywordsAndReferences("namuwiki", keywordList, linksList);
 
         return null;
 
