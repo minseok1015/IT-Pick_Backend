@@ -27,7 +27,7 @@ public class DebateController {
     private final VoteService voteService;
 
     @PostMapping("")
-    public BaseResponse<PostDebateResponse> createDebate(@Valid @RequestBody PostDebateRequest postDebateRequest, BindingResult bindingResult) {
+    public BaseResponse<PostDebateResponse> createDebate(@Valid @ModelAttribute PostDebateRequest postDebateRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_DEBATE_VALUE, getErrorMessages(bindingResult));

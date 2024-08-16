@@ -95,11 +95,13 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
 
     EMPTY_REFERENCE(8002,HttpStatus.BAD_REQUEST.value(),"해당 키워드의 관련자료를 찾지 못하였습니다"),
 
-    NO_SEARCH_KEYWORD(8004,HttpStatus.BAD_REQUEST.value(),"관련된 키워드를 찾지 못했습니다");
+    NO_SEARCH_KEYWORD(8004,HttpStatus.BAD_REQUEST.value(),"관련된 키워드를 찾지 못했습니다"),
 
+    /**
+     * 9000: 미디어  오류
+     */
 
-
-
+    FILE_TOO_LARGE(9000, HttpStatus.PAYLOAD_TOO_LARGE.value(), "업로드할 파일의 크기가 너무 큽니다.");
 
 
     private final int code;

@@ -1,6 +1,7 @@
 package store.itpick.backend.common.exception_handler;
 
 // import jakarta.validation.ConstraintViolationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import store.itpick.backend.common.exception.BadRequestException;
 import store.itpick.backend.common.exception.InternalServerErrorException;
 import store.itpick.backend.common.response.BaseErrorResponse;
@@ -61,6 +62,12 @@ public class BaseExceptionControllerAdvice {
     public BaseErrorResponse handle_RuntimeException(Exception e) {
         log.error("[handle_RuntimeException]", e);
         return new BaseErrorResponse(SERVER_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public BaseErrorResponse handleMaxSizeException(MaxUploadSizeExceededException e) {
+        return new BaseErrorResponse(FILE_TOO_LARGE);
     }
 
 }
