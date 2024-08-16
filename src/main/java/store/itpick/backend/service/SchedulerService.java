@@ -77,7 +77,8 @@ public class SchedulerService {
 
     private boolean isDailyTaskTime() {
         LocalTime now = LocalTime.now();
-        return now.getHour() == 18 && now.getMinute() == 0;
+        System.out.println("현재 시각 :"+now.getHour()+" 현재 분 : "+now.getMinute());
+        return now.getHour() == 19 && now.getMinute() == 0;
     }
 
     private boolean isMonday() {
