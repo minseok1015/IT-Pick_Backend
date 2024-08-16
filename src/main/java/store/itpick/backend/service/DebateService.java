@@ -185,6 +185,7 @@ public class DebateService {
                             .createAt(comment.getCreateAt())
                             .commentHeartCount(comment.getCommentHearts().size())
                             .userHearted(userHearted)
+                            .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getCommentId() : null)
                             .build();
                 })
                 .toList();

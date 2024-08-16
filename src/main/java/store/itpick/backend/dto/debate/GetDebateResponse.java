@@ -52,5 +52,6 @@ public class GetDebateResponse {
         private Timestamp createAt;
         private long commentHeartCount;
         private boolean userHearted;
+        private Long parentCommentId;
     }
 }
