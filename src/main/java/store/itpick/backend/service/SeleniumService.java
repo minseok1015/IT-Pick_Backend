@@ -483,7 +483,7 @@ public class SeleniumService {
         }
 
         /**나무위키 관련 Redis저장**/
-        redis.saveRealtime(CommunityType.NAMUWIKI, PeriodType.BY_REAL_TIME, keywordList);
+//        redis.saveRealtime(CommunityType.NAMUWIKI, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
         List<String> linksList = new ArrayList<>();
@@ -497,7 +497,7 @@ public class SeleniumService {
             linksList.add(namuSearchUrl);
             System.out.println(namuSearchUrl);
         }
-        processKeywordsAndReferences("namuwiki", keywordList, linksList);
+//        processKeywordsAndReferences("namuwiki", keywordList, linksList);
 
         return null;
 
