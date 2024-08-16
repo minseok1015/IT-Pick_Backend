@@ -95,7 +95,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
 
     EMPTY_REFERENCE(8002,HttpStatus.BAD_REQUEST.value(),"해당 키워드의 관련자료를 찾지 못하였습니다"),
 
-    NO_SEARCH_KEYWORD(8004,HttpStatus.BAD_REQUEST.value(),"관련된 키워드를 찾지 못했습니다");
+    NO_SEARCH_KEYWORD(8004,HttpStatus.BAD_REQUEST.value(),"관련된 키워드를 찾지 못했습니다"),
+    NO_SEARCH_DEBATE(8005,HttpStatus.BAD_REQUEST.value(),"관련된 토론을 찾지 못했습니다");
 
 
 

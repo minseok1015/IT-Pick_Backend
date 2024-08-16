@@ -84,6 +84,7 @@ public class RankController {
 
     @GetMapping("/namuwiki")
     public String getRankFromNamuwiki() {
+        seleniumService.initDriver();
         String url = "https://namu.wiki/";
         return executeWithRetries(() -> seleniumService.useDriverForNamuwiki(url), "Namuwiki 데이터 수집");
     }
