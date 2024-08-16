@@ -29,6 +29,7 @@ public class SeleniumUtil {
         options.addArguments("--start-maximized");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--headless"); // Headless 모드 활성화
+
         driver = new ChromeDriver(options);
         driver.manage().window().setSize( new Dimension(1920,1080)  );
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
