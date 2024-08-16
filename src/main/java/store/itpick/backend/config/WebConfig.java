@@ -44,6 +44,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("https://itpick.netlify.app/")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
+                .allowedHeaders("Authorization", "Content-Type")
                 .allowCredentials(true);
     }
 }
