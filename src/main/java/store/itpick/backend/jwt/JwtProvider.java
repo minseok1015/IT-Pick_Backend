@@ -1,16 +1,19 @@
 package store.itpick.backend.jwt;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import store.itpick.backend.common.exception.jwt.bad_request.JwtUnsupportedTokenException;
 import store.itpick.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import store.itpick.backend.common.exception.jwt.unauthorized.JwtMalformedTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import store.itpick.backend.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
 
 import java.util.Date;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
+
 //test
 @Slf4j
 @Component
@@ -42,7 +45,6 @@ public class JwtProvider {
                 .signWith(SignatureAlgorithm.HS256, JWT_SECRET_KEY)
                 .compact();
     }
-
 
 
     public String createRefreshToken(String principal, long userId) {
@@ -86,6 +88,8 @@ public class JwtProvider {
 
         } catch (ExpiredJwtException e) {
             return true;
+        } catch (SignatureException e) {
+            throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
         } catch (UnsupportedJwtException e) {
             throw new JwtUnsupportedTokenException(UNSUPPORTED_TOKEN_TYPE);
         } catch (MalformedJwtException e) {
@@ -112,7 +116,7 @@ public class JwtProvider {
                 .getBody().getExpiration();
     }
 
-    public Long getUserIdFromToken(String token){
+    public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(JWT_SECRET_KEY).build()
                 .parseClaimsJws(token)

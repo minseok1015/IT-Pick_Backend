@@ -29,7 +29,7 @@ public class DebateController {
     private final VoteService voteService;
 
     @PostMapping("")
-    public BaseResponse<PostDebateResponse> createDebate(@Valid @RequestBody PostDebateRequest postDebateRequest, BindingResult bindingResult) {
+    public BaseResponse<PostDebateResponse> createDebate(@Valid @ModelAttribute PostDebateRequest postDebateRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_DEBATE_VALUE, getErrorMessages(bindingResult));
@@ -84,14 +84,9 @@ public class DebateController {
     @GetMapping("/details")
     public BaseResponse<GetDebateResponse> getDebate(
             @RequestParam Long debateId,
-            @RequestHeader("Authorization") String token,BindingResult bindingResult) {
+            @RequestHeader("Authorization") String token) {
 
         String jwtToken = token.substring(7);
-
-
-        if (bindingResult.hasErrors()) {
-            throw new DebateException(INVALID_GET_DEBATE_VALUE, getErrorMessages(bindingResult));
-        }
 
         GetDebateResponse debateResponse = debateService.getDebate(debateId, jwtToken);
 

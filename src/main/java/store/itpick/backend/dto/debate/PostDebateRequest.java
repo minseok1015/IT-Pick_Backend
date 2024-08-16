@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class PostDebateRequest {
 
     @NotBlank(message = "Debate는 필수입니다.")
     private String content;
+
+    private MultipartFile imageFile;
 
     private List<VoteOptionRequest> voteOptions;
 }

@@ -12,6 +12,7 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
     @Query("SELECT d FROM Debate d WHERE d.keyword.keywordId = :keywordId ORDER BY d.hits DESC")
     List<Debate> findByKeywordIdOrderByHitsDesc(Long keywordId);
 
+
     @Query("SELECT d FROM Debate d WHERE d.keyword.keywordId = :keywordId ORDER BY d.createAt DESC")
     List<Debate> findByKeywordIdOrderByCreateAtDesc(Long keywordId);
 }

@@ -38,6 +38,7 @@ public class DebateService {
     private final VoteOptionRepository voteOptionRepository;
     private final VoteService voteService;
     private final JwtProvider jwtProvider;
+    private final S3ImageBucketService s3ImageBucketService;
 
     @Transactional
     public PostDebateResponse createDebate(PostDebateRequest postDebateRequest) {
@@ -48,7 +49,13 @@ public class DebateService {
         Keyword keyword = keywordRepository.findById(postDebateRequest.getKeywordId())
                 .orElseThrow(() -> new DebateException(KEYWORD_NOT_FOUND));
 
-        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).user(user).build();
+        // 이미지 업로드 처리
+        String imageUrl = null;
+        if (postDebateRequest.getImageFile() != null && !postDebateRequest.getImageFile().isEmpty()) {
+            imageUrl = s3ImageBucketService.saveDebateImg(postDebateRequest.getImageFile());
+        }
+
+        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).imageUrl(imageUrl).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).user(user).build();
 
         debate = debateRepository.save(debate);
 
@@ -133,12 +140,16 @@ public class DebateService {
 
         if (jwtProvider.isExpiredToken(token)) {
             throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
+
         }
-        
+
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         Debate debate = debateRepository.findById(debateId)
                 .orElseThrow(() -> new DebateException(DEBATE_NOT_FOUND));
+
+        debate.setHits(debate.getHits() + 1);
+        debateRepository.save(debate);
 
         User user = debate.getUser();
 
@@ -197,7 +208,7 @@ public class DebateService {
                 .userVoteOptionText(userVoteOptionText)
                 .build();
     }
-
+    
     @Transactional
     public List<DebateByKeywordDTO> GetDebatesByKeyword(Long keywordID, String sort){
         List<Debate> debates=null;
@@ -221,5 +232,4 @@ public class DebateService {
         return debateList;
 
     }
-
 }
