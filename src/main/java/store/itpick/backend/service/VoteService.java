@@ -30,9 +30,11 @@ public class VoteService {
     private final DebateRepository debateRepository;
     private final VoteOptionRepository voteOptionRepository;
     private final UserVoteChoiceRepository userVoteChoiceRepository;
+    private final S3ImageBucketService s3ImageBucketService;
 
     @Transactional
     public PostVoteResponse createVote(PostVoteRequest postVoteRequest, List<VoteOptionRequest> voteOptions) {
+
         Debate debate = debateRepository.findById(postVoteRequest.getDebateId())
                 .orElseThrow(() -> new VoteException(INVALID_DEBATE_ID));
 
@@ -44,7 +46,6 @@ public class VoteService {
                 .build();
 
         vote = voteRepository.save(vote);
-
         if (voteOptions != null && !voteOptions.isEmpty()) {
             createVoteOptions(vote, voteOptions);
         }
@@ -55,9 +56,15 @@ public class VoteService {
     @Transactional
     public void createVoteOptions(Vote vote, List<VoteOptionRequest> voteOptions) {
         for (VoteOptionRequest option : voteOptions) {
+            String imgUrl = null;
+
+            if (option.getImageFile() != null && !option.getImageFile().isEmpty()) {
+                imgUrl = s3ImageBucketService.saveDebateImg(option.getImageFile());
+            }
+
             VoteOption voteOption = VoteOption.builder()
                     .optionText(option.getOptionText())
-                    .imgUrl(option.getImgUrl())
+                    .imgUrl(imgUrl)
                     .status("active")
                     .createAt(Timestamp.valueOf(LocalDateTime.now()))
                     .updateAt(Timestamp.valueOf(LocalDateTime.now()))
