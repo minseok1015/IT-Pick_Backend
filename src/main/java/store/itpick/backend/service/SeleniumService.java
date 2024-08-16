@@ -290,11 +290,11 @@ public class SeleniumService {
 
                 Reference reference=new Reference();
 
-                reference.setNewsTitle(newsTitle);
-                reference.setNewsContent(newsContent);
-                reference.setNewsLink(newsLink);
-                reference.setNewsImage(imageUrl);
-                reference.setSearchLink(searchLink);
+                reference.setNewsTitle(truncateContent(newsTitle));
+                reference.setNewsContent(truncateContent(newsContent));
+                reference.setNewsLink(truncateContent(newsLink));
+                reference.setNewsImage(truncateContent(imageUrl));
+                reference.setSearchLink(truncateContent(searchLink));
 
                 references.add(reference);
             }catch (NoSuchElementException e){
@@ -400,7 +400,14 @@ public class SeleniumService {
         }
     }
 
-
+    //글자수 자르기
+    private String truncateContent(String content) {
+        final int MAX_LENGTH = 250;
+        if (content.length() > MAX_LENGTH) {
+            return content.substring(0, MAX_LENGTH);
+        }
+        return content;
+    }
 
 
 
