@@ -27,6 +27,8 @@ public class PostDebateRequest {
     @NotBlank(message = "Debate는 필수입니다.")
     private String content;
 
+    private String imageUrl;
+
     private List<VoteOptionRequest> voteOptions;
 }
 

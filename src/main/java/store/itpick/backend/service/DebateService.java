@@ -46,7 +46,7 @@ public class DebateService {
         Keyword keyword = keywordRepository.findById(postDebateRequest.getKeywordId())
                 .orElseThrow(() -> new DebateException(KEYWORD_NOT_FOUND));
 
-        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).user(user).build();
+        Debate debate = Debate.builder().title(postDebateRequest.getTitle()).content(postDebateRequest.getContent()).hits(0L).imageUrl(postDebateRequest.getImageUrl()).onTrend(false).status("active").createAt(Timestamp.valueOf(LocalDateTime.now())).updateAt(Timestamp.valueOf(LocalDateTime.now())).keyword(keyword).user(user).build();
 
         debate = debateRepository.save(debate);
 
@@ -131,8 +131,9 @@ public class DebateService {
 
         if (jwtProvider.isExpiredToken(token)) {
             throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
+
         }
-        
+
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         Debate debate = debateRepository.findById(debateId)

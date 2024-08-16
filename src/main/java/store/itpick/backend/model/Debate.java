@@ -41,6 +41,9 @@ public class Debate {
     @Column(name = "update_at")
     private Timestamp updateAt;
 
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private String imageUrl;
+
     @OneToOne(mappedBy = "debate", cascade = CascadeType.ALL)
     private Vote vote;
 
