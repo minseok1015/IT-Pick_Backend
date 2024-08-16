@@ -1,5 +1,6 @@
 package store.itpick.backend.config;
 
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import store.itpick.backend.common.argument_resolver.GetJwtHandlerArgumentResolver;
 import store.itpick.backend.common.argument_resolver.JwtAuthHandlerArgumentResolver;
 import store.itpick.backend.common.interceptor.GetJwtInterceptor;
@@ -36,5 +37,13 @@ public class WebConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(jwtAuthHandlerArgumentResolver);
         resolvers.add(getJwtHandlerArgumentResolver);
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("https://itpick.netlify.app/")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
+                .allowCredentials(true);
     }
 }
