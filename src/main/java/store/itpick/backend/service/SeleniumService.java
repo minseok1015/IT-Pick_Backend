@@ -463,12 +463,17 @@ public class SeleniumService {
         Actions actions = new Actions(driver);
 
 
+
         WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div > div > div > div > div > div > div > ul a span")));
         actions.moveToElement(button).perform();
 
+        System.out.println("버튼 클릭 완료");
+
         // 키워드 수집
         List<WebElement> webElementByKeyword = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a span"));
+
+        System.out.println("키워드 찾기 완료");
 
         List<String> keywordList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
