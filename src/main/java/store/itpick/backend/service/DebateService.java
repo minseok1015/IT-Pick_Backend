@@ -10,6 +10,7 @@ import store.itpick.backend.common.exception.UserException;
 import store.itpick.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
 import store.itpick.backend.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
 import store.itpick.backend.dto.debate.*;
+import store.itpick.backend.dto.keyword.SearchDTO;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.*;
@@ -207,6 +208,7 @@ public class DebateService {
                 .userVoteOptionText(userVoteOptionText)
                 .build();
     }
+    
     @Transactional
     public List<DebateByKeywordDTO> GetDebatesByKeyword(Long keywordID, String sort){
         List<Debate> debates=null;

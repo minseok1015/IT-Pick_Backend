@@ -26,7 +26,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/auth/login", "/auth/signup", "/auth/refresh","/auth/emails/**", "/rank/**","/auth/email/check","/auth/nickname/check","/favicon.ico","/keyword/**","/debate/keyword");                 //인터셉터 적용 범위 수정
+                .excludePathPatterns("/auth/login", "/auth/signup", "/auth/refresh","/auth/emails/**", "/rank/**","/auth/email/check","/auth/nickname/check","/favicon.ico","/keyword/**","/debate/keyword");
+                 //인터셉터 적용 범위 수정
         registry.addInterceptor(getJwtInterceptor)
                 .addPathPatterns("/user/email");
     }

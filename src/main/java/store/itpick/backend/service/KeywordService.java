@@ -181,6 +181,95 @@ public class KeywordService {
         }
     }
 
+    @Transactional
+    public void performDailyTasksGoogle() {
+
+        /** Community_period 테이블에 해당 일 튜플 추가 **/
+        // 새로운 period 값
+        // 현재 날짜를 yyMMdd 형식으로 포맷
+        String currentDate = Instant.now().atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyMMdd"));
+
+        // 현재 날짜와 'google' 커뮤니티에 대해 이미 존재하는 CommunityPeriod 조회
+        Optional<CommunityPeriod> existingCommunityPeriod = communityPeriodRepository.findByCommunityAndPeriod("google", currentDate);
+
+        CommunityPeriod communityPeriodToSave;
+        if (existingCommunityPeriod.isPresent()) {
+            // 이미 존재하는 경우, 해당 CommunityPeriod 업데이트
+            communityPeriodToSave = existingCommunityPeriod.get();
+            // 필요시 다른 필드를 업데이트
+            communityPeriodToSave.setPeriod(currentDate); // 기존 값과 같지만 명시적으로 설정
+            communityPeriodRepository.save(communityPeriodToSave);
+            log.info("Updated existing CommunityPeriod with period: {}", currentDate);
+        } else {
+            // 존재하지 않는 경우, 새로운 CommunityPeriod 생성 및 저장
+            communityPeriodToSave = new CommunityPeriod();
+            communityPeriodToSave.setCommunity("google");
+            communityPeriodToSave.setPeriod(currentDate);
+            communityPeriodRepository.save(communityPeriodToSave);
+            log.info("Saved new CommunityPeriod with period: {}", currentDate);
+        }
+
+        /**
+         * 키워드 중에 가장 updateAt이 최근에 것인 것을 10개 찾고,
+         * 그 10개의 keywordId를 찾아서, keyword_community_period 테이블에 keywordId와
+         * 위에서 만든 community_period_id를 저장해주는 로직
+         **/
+
+        // 가장 최근에 업데이트된 10개의 키워드 조회
+        List<Keyword> recentKeywords = keywordRepository.findTop10ByCommunityGoogle(PageRequest.of(0, 10));
+
+        // 각 키워드와 새 CommunityPeriod를 연관시키기
+        for (Keyword keyword : recentKeywords) {
+            keyword.getCommunityPeriods().add(communityPeriodToSave);
+            keywordRepository.save(keyword); // 연관관계 업데이트 후 저장
+        }
+    }
+    @Transactional
+    public void performDailyTasksNamuwiki() {
+
+        /** Community_period 테이블에 해당 일 튜플 추가 **/
+        // 새로운 period 값
+        // 현재 날짜를 yyMMdd 형식으로 포맷
+        String currentDate = Instant.now().atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyMMdd"));
+
+        // 현재 날짜와 'namuwiki' 커뮤니티에 대해 이미 존재하는 CommunityPeriod 조회
+        Optional<CommunityPeriod> existingCommunityPeriod = communityPeriodRepository.findByCommunityAndPeriod("namuwiki", currentDate);
+
+        CommunityPeriod communityPeriodToSave;
+        if (existingCommunityPeriod.isPresent()) {
+            // 이미 존재하는 경우, 해당 CommunityPeriod 업데이트
+            communityPeriodToSave = existingCommunityPeriod.get();
+            // 필요시 다른 필드를 업데이트
+            communityPeriodToSave.setPeriod(currentDate); // 기존 값과 같지만 명시적으로 설정
+            communityPeriodRepository.save(communityPeriodToSave);
+            log.info("Updated existing CommunityPeriod with period: {}", currentDate);
+        } else {
+            // 존재하지 않는 경우, 새로운 CommunityPeriod 생성 및 저장
+            communityPeriodToSave = new CommunityPeriod();
+            communityPeriodToSave.setCommunity("namuwiki");
+            communityPeriodToSave.setPeriod(currentDate);
+            communityPeriodRepository.save(communityPeriodToSave);
+            log.info("Saved new CommunityPeriod with period: {}", currentDate);
+        }
+
+        /**
+         * 키워드 중에 가장 updateAt이 최근에 것인 것을 10개 찾고,
+         * 그 10개의 keywordId를 찾아서, keyword_community_period 테이블에 keywordId와
+         * 위에서 만든 community_period_id를 저장해주는 로직
+         **/
+
+        // 가장 최근에 업데이트된 10개의 키워드 조회
+        List<Keyword> recentKeywords = keywordRepository.findTop10ByCommunityNamuwiki(PageRequest.of(0, 10));
+
+        // 각 키워드와 새 CommunityPeriod를 연관시키기
+        for (Keyword keyword : recentKeywords) {
+            keyword.getCommunityPeriods().add(communityPeriodToSave);
+            keywordRepository.save(keyword); // 연관관계 업데이트 후 저장
+        }
+    }
+
     public List<String> searchKeywords(String keyword) {
         List<Keyword> keywordList= keywordRepository.findByKeywordStartingWithIgnoreCase(keyword);
         List<String> keywords= new ArrayList<>();

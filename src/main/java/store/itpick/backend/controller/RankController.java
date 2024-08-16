@@ -82,7 +82,7 @@ public class RankController {
         return executeWithRetries(() -> seleniumService.useDriverForZum(url), "Zum 데이터 수집");
     }
 
-    @GetMapping("/namu")
+    @GetMapping("/namuwiki")
     public String getRankFromNamuwiki() {
         seleniumService.initDriver();
         String url = "https://namu.wiki/";
@@ -191,6 +191,8 @@ public class RankController {
             case "naver" -> CommunityType.NAVER;
             case "nate" -> CommunityType.NATE;
             case "zum" -> CommunityType.ZUM;
+            case "google" -> CommunityType.GOOGLE;
+            case "namuwiki" -> CommunityType.NAMUWIKI;
             case "total" -> CommunityType.TOTAL;
             default -> null;
         };

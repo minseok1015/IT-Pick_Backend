@@ -15,3 +15,4 @@ public class DebateByKeywordDTO {
     Long hit;
     Long comment;
 }
+

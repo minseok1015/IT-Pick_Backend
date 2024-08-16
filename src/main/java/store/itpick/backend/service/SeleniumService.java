@@ -43,8 +43,6 @@ public class SeleniumService {
     private final ReferenceService referenceService;
     private final CommunityPeriodService communityPeriodService;
 
-
-
     // ChromeDriver 연결 (WEB_DRIVER_PATH 값 주입되고 사용해야 하므로 PostConstruct)
     public void initDriver() {
         seleniumUtil.initDriver();
@@ -52,6 +50,7 @@ public class SeleniumService {
     }
 
     public List<Reference> useDriverForZum(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
         Actions actions = new Actions(driver);
@@ -109,9 +108,8 @@ public class SeleniumService {
         return null;
     }
 
-
-
     public List<Reference> useDriverForNaver(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
         try {
@@ -143,8 +141,8 @@ public class SeleniumService {
 
         return null;
     }
-
     public List<Reference> useDriverForMnate(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
         Actions actions = new Actions(driver);
 
@@ -212,7 +210,7 @@ public class SeleniumService {
 
 
         /**구글 관련 Redis저장**/
-//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+        redis.saveRealtime(CommunityType.GOOGLE, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
         List<String> linksList = new ArrayList<>();
@@ -229,7 +227,7 @@ public class SeleniumService {
 
 
 
-//        processKeywordsAndReferences("google", keywordList, linksList);
+        processKeywordsAndReferences("google", keywordList, linksList);
 
         return null;
     }
@@ -459,17 +457,23 @@ public class SeleniumService {
 
 
     public String useDriverForNamuwiki(String url) {
+//        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
         Actions actions = new Actions(driver);
+
 
 
         WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div > div > div > div > div > div > div > ul a span")));
         actions.moveToElement(button).perform();
 
+        System.out.println("버튼 클릭 완료");
+
         // 키워드 수집
         List<WebElement> webElementByKeyword = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a span"));
+
+        System.out.println("키워드 찾기 완료");
 
         List<String> keywordList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -484,8 +488,7 @@ public class SeleniumService {
         }
 
         /**나무위키 관련 Redis저장**/
-
-//        redis.saveRealtime(CommunityType.NATE, PeriodType.BY_REAL_TIME, keywordList);
+//        redis.saveRealtime(CommunityType.NAMUWIKI, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
         List<String> linksList = new ArrayList<>();
@@ -499,7 +502,7 @@ public class SeleniumService {
             linksList.add(namuSearchUrl);
             System.out.println(namuSearchUrl);
         }
-//        processKeywordsAndReferences("namu", keywordList, linksList);
+//        processKeywordsAndReferences("namuwiki", keywordList, linksList);
 
         return null;
 

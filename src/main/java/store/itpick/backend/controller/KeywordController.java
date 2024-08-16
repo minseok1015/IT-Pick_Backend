@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.itpick.backend.common.exception.KeywordException;
 import store.itpick.backend.common.response.BaseResponse;
+import store.itpick.backend.dto.debate.DebateByKeywordDTO;
 import store.itpick.backend.dto.keyword.SearchDTO;
 import store.itpick.backend.dto.debate.DebateByKeywordDTO;
 import store.itpick.backend.model.Keyword;
@@ -41,4 +42,6 @@ public class KeywordController {
         }
         return new BaseResponse<>(keywords);
     }
+
+
 }
