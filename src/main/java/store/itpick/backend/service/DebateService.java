@@ -146,6 +146,9 @@ public class DebateService {
         Debate debate = debateRepository.findById(debateId)
                 .orElseThrow(() -> new DebateException(DEBATE_NOT_FOUND));
 
+        debate.setHits(debate.getHits() + 1);
+        debateRepository.save(debate);
+
         User user = debate.getUser();
 
         boolean userVoted = false;
