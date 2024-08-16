@@ -460,18 +460,20 @@ public class SeleniumService {
 //        initDriver();   // 로컬에서 테스트 위해 잠시 호출
         driver.get(url);
 
-        Actions actions = new Actions(driver);
+//        Actions actions = new Actions(driver);
 
 
 
-        WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div > div > div > div > div > div > div > ul a span")));
-        actions.moveToElement(button).perform();
+//        WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
+//                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div > div > div > div > div > div > div > ul a span")));
+//        actions.moveToElement(button).perform();
 
-        System.out.println("버튼 클릭 완료");
 
         // 키워드 수집
-        List<WebElement> webElementByKeyword = driver.findElements(By.cssSelector("div > div > div > div > div > div > div > ul li a span"));
+//        List<WebElement> webElementByKeyword = driver.findElements(By.cssSelector(".list-item-container list-group-item"));
+
+        List<WebElement> webElementByKeyword = new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("a .fw-bold")));
 
         System.out.println("키워드 찾기 완료");
 
@@ -479,16 +481,12 @@ public class SeleniumService {
         for (int i = 0; i < 10; i++) {
             WebElement element = webElementByKeyword.get(i);
             String keyword = element.getText();
-            if(keyword.isEmpty()){
-                System.out.println("데이터를 다 못찾았습니다");
-                throw new TimeoutException();
-            }
             keywordList.add(keyword);
             System.out.println(keyword);
         }
 
         /**나무위키 관련 Redis저장**/
-//        redis.saveRealtime(CommunityType.NAMUWIKI, PeriodType.BY_REAL_TIME, keywordList);
+        redis.saveRealtime(CommunityType.NAMUWIKI, PeriodType.BY_REAL_TIME, keywordList);
 
         // 링크 수집
         List<String> linksList = new ArrayList<>();
@@ -502,7 +500,7 @@ public class SeleniumService {
             linksList.add(namuSearchUrl);
             System.out.println(namuSearchUrl);
         }
-//        processKeywordsAndReferences("namuwiki", keywordList, linksList);
+        processKeywordsAndReferences("namuwiki", keywordList, linksList);
 
         return null;
 
