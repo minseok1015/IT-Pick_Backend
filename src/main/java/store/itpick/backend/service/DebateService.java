@@ -17,6 +17,7 @@ import store.itpick.backend.repository.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -206,5 +207,27 @@ public class DebateService {
                 .userVoteOptionText(userVoteOptionText)
                 .build();
     }
+    @Transactional
+    public List<DebateByKeywordDTO> GetDebatesByKeyword(Long keywordID, String sort){
+        List<Debate> debates=null;
+        if(sort.equals("popularity")){
+            debates = debateRepository.findByKeywordIdOrderByHitsDesc(keywordID);
+        }
+        if (sort.equals("latest")){
+            debates = debateRepository.findByKeywordIdOrderByCreateAtDesc(keywordID);
+        }
+        List<DebateByKeywordDTO> debateList = new ArrayList<>();
 
+        for (Debate debate : debates) {
+            String title= debate.getTitle();
+            String content =debate.getContent();
+            String mediaUrl =null;
+            Long hit = debate.getHits();
+            Long comment = (long) debate.getComment().size();
+            debateList.add(new DebateByKeywordDTO(title,content,mediaUrl,hit,comment));
+        }
+
+        return debateList;
+
+    }
 }

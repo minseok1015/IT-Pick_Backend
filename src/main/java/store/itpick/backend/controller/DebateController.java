@@ -14,6 +14,8 @@ import store.itpick.backend.dto.vote.PostUserVoteChoiceRequest;
 import store.itpick.backend.service.DebateService;
 import store.itpick.backend.service.VoteService;
 
+import java.util.List;
+
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
 import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 
@@ -89,5 +91,13 @@ public class DebateController {
         GetDebateResponse debateResponse = debateService.getDebate(debateId, jwtToken);
 
         return new BaseResponse<>(debateResponse);
+    }
+
+    @GetMapping("/keyword")
+    public BaseResponse<List<DebateByKeywordDTO>> getDebateByKeyword( @RequestParam Long keywordId,@RequestParam String sort){
+
+        List<DebateByKeywordDTO> debates=debateService.GetDebatesByKeyword(keywordId,sort);
+
+        return new BaseResponse<>(debates);
     }
 }
