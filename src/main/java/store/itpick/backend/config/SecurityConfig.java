@@ -1,6 +1,5 @@
 package store.itpick.backend.config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,25 +32,27 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .cors(withDefaults())  // CORS 설정 추가
+                .cors(withDefaults())  // CORS 설정 추가
                 .formLogin(FormLoginConfigurer::disable)
-                .sessionManagement((sessionManagement) ->
+                .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
         return http.build();
     }
 
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//        config.addAllowedOrigin("https://itpick.netlify.app");
-//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-//        config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-//        config.setExposedHeaders(Arrays.asList("set-cookie"));
-//        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter(source);
-//    }
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("https://itpick.netlify.app");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:5173");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "Accept", "X-Requested-With"));
+        config.setExposedHeaders(Arrays.asList("Authorization", "location"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 }
