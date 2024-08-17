@@ -119,6 +119,21 @@ public class RankController {
         keywordService.performDailyTasksZum();
     }
 
+    @GetMapping("/update/hourly")
+    public void updateHourly() {
+        rankService.performHourlyTasks();
+    }
+
+    @GetMapping("/update/daily")
+    public void updateDaily() {
+        rankService.performDailyTasks();
+    }
+
+    @GetMapping("/update/weekly")
+    public void updateWeekly() {
+        rankService.performWeeklyTasks();
+    }
+
 
 
     @GetMapping("/naver")
