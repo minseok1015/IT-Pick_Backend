@@ -38,4 +38,15 @@ public class GetMyPageResponse {
         private Long hits;
         private Long comments;
     }
+
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class InvolvedDebate {
+        private String title;
+        private String keyword;
+        private String duration;
+        private Long hits;
+        private Long comments;
+    }
 }

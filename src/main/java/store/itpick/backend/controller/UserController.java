@@ -133,5 +133,10 @@ public class UserController {
         return new BaseResponse<>(userService.getMyDebate(userId));
     }
 
+    @GetMapping("/involved-debate")
+    public BaseResponse<List<GetMyPageResponse.InvolvedDebate>> getInvolvedDebate(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getInvolvedDebate(userId));
+    }
+
 
 }

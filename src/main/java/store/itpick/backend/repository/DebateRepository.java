@@ -24,4 +24,11 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.debate = :debate")
     Long countCommentsByDebate(@Param("debate") Debate debate);
 
+    @Query("SELECT DISTINCT d FROM Debate d " +
+            "JOIN d.vote v " +
+            "JOIN v.voteOptions vo " +
+            "JOIN vo.userVoteChoices uvc " +
+            "WHERE uvc.user = :user")
+    List<Debate> findDebatesByUserVoteChoice(@Param("user") User user);
+
 }
