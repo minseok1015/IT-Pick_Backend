@@ -224,7 +224,7 @@ public class DebateService {
         for (Debate debate : debates) {
             String title= debate.getTitle();
             String content =debate.getContent();
-            String mediaUrl =null;
+            String mediaUrl =debate.getImageUrl();
             Long hit = debate.getHits();
             Long comment = (long) debate.getComment().size();
             debateList.add(new DebateByKeywordDTO(title,content,mediaUrl,hit,comment));
