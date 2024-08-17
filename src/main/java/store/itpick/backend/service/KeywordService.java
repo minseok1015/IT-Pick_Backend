@@ -289,7 +289,7 @@ public class KeywordService {
         List<SearchDTO> rankingList = new ArrayList<>();
         for (String keywordBadge : keywords) {
             RankListForKeyword rankingBadgeResponse = redis.getRankingBadgeResponse(keywordBadge, PeriodType.BY_REAL_TIME, "");
-            rankingList.add(new SearchDTO(keywordBadge, rankingBadgeResponse.getNateRank(), rankingBadgeResponse.getNaverRank(), rankingBadgeResponse.getZumRank()));
+            rankingList.add(new SearchDTO(keywordBadge, rankingBadgeResponse.getNateRank(), rankingBadgeResponse.getNaverRank(), rankingBadgeResponse.getZumRank(),rankingBadgeResponse.getGoogleRank(),rankingBadgeResponse.getNamuwikiRank()));
         }
         return rankingList;
     }
