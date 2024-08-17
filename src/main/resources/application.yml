@@ -203,3 +203,7 @@ cloud:
       accessKey: ${AWS_S3_BUCKET_ACCESS_KEY}
       secretKey: ${AWS_S3_BUCKET_SECRET_KEY}
 
+---
+spring:
+  jackson:
+    time-zone: Asia/Seoul
