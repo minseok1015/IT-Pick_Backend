@@ -15,6 +15,8 @@ import store.itpick.backend.dto.user.*;
 import store.itpick.backend.service.S3ImageBucketService;
 import store.itpick.backend.service.UserService;
 
+import java.util.List;
+
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.INVALID_USER_VALUE;
 import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 
@@ -123,6 +125,12 @@ public class UserController {
     @GetMapping("/profile-edit")
     public BaseResponse<GetMyPageResponse.ProfileEdit> getProfileEditPage(@PreAuthorize long userId){
         return new BaseResponse<>(userService.getProfileEditPage(userId));
+    }
+
+
+    @GetMapping("/my-debate")
+    public BaseResponse<List<GetMyPageResponse.MyDebate>> getMyDebate(@PreAuthorize long userId){
+        return new BaseResponse<>(userService.getMyDebate(userId));
     }
 
 
