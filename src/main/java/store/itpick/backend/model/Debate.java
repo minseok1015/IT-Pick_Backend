@@ -9,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "debate")
+@EqualsAndHashCode(exclude = {"vote"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

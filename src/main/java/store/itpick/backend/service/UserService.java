@@ -12,9 +12,7 @@ import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.Debate;
 import store.itpick.backend.model.LikedTopic;
 import store.itpick.backend.model.User;
-import store.itpick.backend.repository.DebateRepository;
-import store.itpick.backend.repository.LikedTopicRepository;
-import store.itpick.backend.repository.UserRepository;
+import store.itpick.backend.repository.*;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -36,6 +34,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final DebateRepository debateRepository;
+    private final CommentRepository commentRepository;
 
 
     public void changeNickname(long userId, String nickname) {
@@ -163,9 +162,9 @@ public class UserService {
         return new GetUserResponse.ProfileImg(user.getImageUrl());
     }
 
+
+
     // page
-
-
     public GetMyPageResponse.MyPage getMyPage(long userId) {
         User user = getUser(userId, userRepository);
         return GetMyPageResponse.MyPage.builder()
@@ -191,9 +190,15 @@ public class UserService {
     public List<GetMyPageResponse.MyDebate> getMyDebate(long userId) {
         User user = getUser(userId, userRepository);
         List<Debate> myDebateList = debateRepository.getDebateByUser(user);
+
+        // 최근 순으로 정렬
+        List<Debate> sortedDebates = myDebateList.stream()
+                .sorted((d1, d2) -> d2.getCreateAt().compareTo(d1.getCreateAt()))
+                .collect(Collectors.toList());
+
         List<GetMyPageResponse.MyDebate> myDebateResponseList = new ArrayList<>();
 
-        for (Debate myDebate : myDebateList) {
+        for (Debate myDebate : sortedDebates) {
             myDebateResponseList.add(GetMyPageResponse.MyDebate.builder()
                     .title(myDebate.getTitle())
                     .keyword(myDebate.getKeyword().getKeyword())
@@ -205,8 +210,40 @@ public class UserService {
         }
 
         return myDebateResponseList;
-
     }
+
+
+    public List<GetMyPageResponse.InvolvedDebate> getInvolvedDebate(long userId) {
+        User user = getUser(userId, userRepository);
+        List<Debate> voteDebateList = debateRepository.findDebatesByUserVoteChoice(user);
+        List<Debate> commentDebateList = commentRepository.findDebatesByUserComments(user);
+        List<GetMyPageResponse.InvolvedDebate> involvedDebateResponseList = new ArrayList<>();
+
+        // 모든 Debate를 하나의 리스트로 통합
+        Set<Debate> allDebates = new HashSet<>(voteDebateList);
+        allDebates.addAll(commentDebateList);
+
+        // 최근 순으로 정렬
+        List<Debate> sortedDebates = allDebates.stream()
+                .sorted((d1, d2) -> d2.getCreateAt().compareTo(d1.getCreateAt()))
+                .collect(Collectors.toList());
+
+        // 정렬된 Debate 리스트를 순회하면서 응답 리스트 생성
+        for (Debate involvedDebate : sortedDebates) {
+            involvedDebateResponseList.add(GetMyPageResponse.InvolvedDebate.builder()
+                    .title(involvedDebate.getTitle())
+                    .keyword(involvedDebate.getKeyword().getKeyword())
+                    .duration(getTimeAgo(involvedDebate.getCreateAt()))
+                    .hits(involvedDebate.getHits())
+                    .comments(debateRepository.countCommentsByDebate(involvedDebate))
+                    .build()
+            );
+        }
+
+        return involvedDebateResponseList;
+    }
+
+
 
 
     // 관심 주제 반환
@@ -231,7 +268,7 @@ public class UserService {
 
         // 경과된 시간에 따라 결과 문자열 생성
         if (duration.toMinutes() < 1) {
-            return "방금전";
+            return "방금 전";
         }
 
         if (duration.toMinutes() < 60) {
