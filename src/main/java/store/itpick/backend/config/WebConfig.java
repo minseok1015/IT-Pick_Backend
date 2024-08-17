@@ -39,12 +39,20 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(getJwtHandlerArgumentResolver);
     }
 
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//                .allowedOrigins("https://itpick.netlify.app")
-//                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
-//                .allowedHeaders("Authorization", "Content-Type")
-//                .allowCredentials(true);
-//    }
+
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns("http://localhost:3000/", "http://localhost:5173/", "https://localhost:5173/",
+                        "https://itpick.netlify.app")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
+                .exposedHeaders("location", "Authorization")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+
+
+
+
 }
