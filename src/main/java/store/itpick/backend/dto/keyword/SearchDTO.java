@@ -10,5 +10,7 @@ public class SearchDTO {
     private long nateRank;
     private long naverRank;
     private long zumRank;
+    private long GoogleRank;
+    private long NamuwikiRank;
 }
 
