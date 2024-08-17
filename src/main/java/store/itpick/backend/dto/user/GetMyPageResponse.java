@@ -27,4 +27,15 @@ public class GetMyPageResponse {
         private String birth_date;
         private List<String> likedTopicList;
     }
+
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    public static class MyDebate {
+        private String title;
+        private String keyword;
+        private String duration;
+        private Long hits;
+        private Long comments;
+    }
 }
