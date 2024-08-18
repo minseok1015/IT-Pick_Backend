@@ -35,6 +35,7 @@ public class GetMyPageResponse {
         private String title;
         private String keyword;
         private String duration;
+        private Long debateId;
         private Long hits;
         private Long comments;
     }
@@ -46,6 +47,7 @@ public class GetMyPageResponse {
         private String title;
         private String keyword;
         private String duration;
+        private Long debateId;
         private Long hits;
         private Long comments;
     }

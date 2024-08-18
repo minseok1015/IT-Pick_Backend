@@ -116,4 +116,11 @@ public class DebateController {
 
         return new BaseResponse<>(debateResponse);
     }
+
+
+    @DeleteMapping("/{debateId}")
+    public BaseResponse<?> deleteDebate(@PreAuthorize long userId, @PathVariable Long debateId){
+        debateService.deleteDebate(debateId,userId);
+        return new BaseResponse<>(null);
+    }
 }

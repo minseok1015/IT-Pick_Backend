@@ -1,6 +1,7 @@
 package store.itpick.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
@@ -30,5 +31,12 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
             "JOIN vo.userVoteChoices uvc " +
             "WHERE uvc.user = :user")
     List<Debate> findDebatesByUserVoteChoice(@Param("user") User user);
+
+    @Modifying
+    @Query("UPDATE Debate d SET d.status = 'deleted' WHERE d.debateId = :debate_id")
+    void softDeleteById(@Param("debate_id") Long debate_id);
+
+    Optional<Debate> getDebateByDebateId(Long debateId);
+
 
 }
