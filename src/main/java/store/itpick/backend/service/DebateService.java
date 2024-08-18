@@ -193,6 +193,7 @@ public class DebateService {
 
         return GetDebateResponse.builder()
                 .debateId(debate.getDebateId())
+                .debateImgUrl(debate.getImageUrl())
                 .title(debate.getTitle())
                 .content(debate.getContent())
                 .hits(debate.getHits())
