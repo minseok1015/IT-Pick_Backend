@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class GetRankingListResponse {
+public class RankingListResponse {
     private String redisKey;
     private List<RankDTO> rankingList;
 }

@@ -10,6 +10,7 @@ import store.itpick.backend.common.exception.ReferenceException;
 import store.itpick.backend.common.response.BaseErrorResponse;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.common.response.status.ResponseStatus;
+import store.itpick.backend.dto.redis.MainKeywordResponse;
 import store.itpick.backend.model.rank.CommunityType;
 import store.itpick.backend.model.rank.PeriodType;
 import store.itpick.backend.dto.rank.RankResponseDTO;
@@ -170,6 +171,11 @@ public class RankController {
             return new BaseErrorResponse(BAD_REQUEST);
         }
         return new BaseResponse<>(redis.getRankingBadgeResponse(keyword, periodType, date));
+    }
+
+    @GetMapping("/main-keywords")
+    public BaseResponse<MainKeywordResponse> getMainKeywords() {
+        return new BaseResponse<>(redis.getMainKeywords());
     }
 
 //    private static boolean isValidatedDate(PeriodType periodType, String date) {

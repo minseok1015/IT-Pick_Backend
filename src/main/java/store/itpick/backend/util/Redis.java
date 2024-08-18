@@ -4,8 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
+import store.itpick.backend.dto.redis.MainKeywordResponse;
 import store.itpick.backend.dto.redis.RankListForKeyword;
-import store.itpick.backend.dto.redis.GetRankingListResponse;
+import store.itpick.backend.dto.redis.RankingListResponse;
 import store.itpick.backend.dto.redis.RankDTO;
 import store.itpick.backend.model.rank.CommunityType;
 import store.itpick.backend.model.rank.PeriodType;
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class Redis {
@@ -151,7 +151,7 @@ public class Redis {
         }
     }
 
-    public GetRankingListResponse getRankingList(CommunityType communityType, PeriodType periodType, String date) {
+    public RankingListResponse getRankingList(CommunityType communityType, PeriodType periodType, String date) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         String key = makeKey(communityType, periodType, date);
 
@@ -172,7 +172,7 @@ public class Redis {
                     .build());
         }
 
-        return new GetRankingListResponse(key, rankingList);
+        return new RankingListResponse(key, rankingList);
     }
 
     public RankListForKeyword getRankingBadgeResponse(String keyword, PeriodType periodType, String date) {
@@ -194,6 +194,25 @@ public class Redis {
                 .zumRank(rankByCommunity.get(2))
                 .googleRank(rankByCommunity.get(3))
                 .namuwikiRank(rankByCommunity.get(4))
+                .build();
+    }
+
+    public MainKeywordResponse getMainKeywords() {
+        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+
+        List<String> mainKeywordList = new ArrayList<>();
+        for (String realTimeKey : getKeyList(PeriodType.BY_REAL_TIME, "not needed")) {
+            for (Object mainKeyword : zSetOperations.reverseRange(realTimeKey, 0, 0)) {
+                mainKeywordList.add((String) mainKeyword);
+            }
+        }
+
+        return MainKeywordResponse.builder()
+                .naverMainKeyword(mainKeywordList.get(0))
+                .nateMainKeyword(mainKeywordList.get(1))
+                .zumMainKeyword(mainKeywordList.get(2))
+                .googleMainKeyword(mainKeywordList.get(3))
+                .namuwikiMainKeyword(mainKeywordList.get(4))
                 .build();
     }
 
