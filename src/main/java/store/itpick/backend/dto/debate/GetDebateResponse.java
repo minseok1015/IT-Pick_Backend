@@ -30,6 +30,7 @@ public class GetDebateResponse {
     private boolean userVoted;
     private String userVoteOptionText;
     private String debateImgUrl;
+    private boolean multipleChoice;
 
     @Data
     @Builder

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,5 +18,5 @@ public class DeleteUserVoteChoiceRequest {
     private Long userId;
 
     @NotNull(message = "Vote Option ID는 필수입니다.")
-    private Long voteOptionId;
+    private List<Long> voteOptionIds;
 }

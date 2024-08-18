@@ -6,4 +6,5 @@ import lombok.Data;
 public class PostVoteRequest {
     private Long debateId;
     private Long optionNum;
+    private boolean multipleChoice;
 }

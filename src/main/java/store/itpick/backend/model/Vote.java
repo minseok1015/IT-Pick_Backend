@@ -28,6 +28,8 @@ public class Vote {
     @Column(name = "update_at")
     private Timestamp updateAt;
 
+    @Column(nullable = false)
+    private boolean multipleChoice = false;
     @OneToOne
     @JoinColumn(name = "debate_id", nullable = false)
     private Debate debate;
