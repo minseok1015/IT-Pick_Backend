@@ -3,6 +3,7 @@ package store.itpick.backend.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.exception.AuthException;
@@ -41,6 +42,7 @@ public class DebateService {
     private final JwtProvider jwtProvider;
     private final S3ImageBucketService s3ImageBucketService;
     private final RecentViewedDebateRepository recentViewedDebateRepository;
+    private final TrendDebateRepository trendDebateRepository;
 
     @Transactional
     public PostDebateResponse createDebate(PostDebateRequest postDebateRequest, long userId) {
@@ -230,11 +232,11 @@ public class DebateService {
         for (Debate debate : debates) {
             if(debate.getStatus().equals("active")){
                 String title= debate.getTitle();
-                String content =debate.getContent();
+                Long debateId =debate.getDebateId();
                 String mediaUrl =debate.getImageUrl();
                 Long hit = debate.getHits();
                 Long comment = (long) debate.getComment().size();
-                debateList.add(new DebateByKeywordDTO(title,content,mediaUrl,hit,comment));
+                debateList.add(new DebateByKeywordDTO(title,debateId,mediaUrl,hit,comment));
             }
         }
 
@@ -267,7 +269,7 @@ public class DebateService {
         // Debate를 DTO로 변환
         return debates.stream()
                 .filter(debate -> "active".equals(debate.getStatus()))
-                .map(debate -> new DebateByKeywordDTO(debate.getTitle(), debate.getContent(), debate.getImageUrl(),debate.getHits(), (long) debate.getComment().size()))
+                .map(debate -> new DebateByKeywordDTO(debate.getTitle(), debate.getDebateId(), debate.getImageUrl(),debate.getHits(), (long) debate.getComment().size()))
                 .collect(Collectors.toList());
 
     }
@@ -292,6 +294,35 @@ public class DebateService {
         debateRepository.softDeleteById(debateId);
 
 
+    }
+
+    @Transactional
+    public List<DebateByKeywordDTO> updateHotDebate() {
+        // 현재 시간 및 48시간 전 시간 계산
+        Timestamp endTime = new Timestamp(System.currentTimeMillis());
+        Timestamp startTime = new Timestamp(endTime.getTime() - 3 * 24 * 60 * 60 * 1000); // 3일 전 시간
+        PageRequest pageRequest = PageRequest.of(0, 3); // 상위 3개만 가져오기
+
+        // 기존의 TrendDebate 삭제
+        trendDebateRepository.deleteAllInBatch();
+
+        // 48시간 동안 조회수가 가장 많이 오른 상위 3개의 Debate 조회
+        List<Debate> debateList = debateRepository.findTop3DebatesCreatedInLast3Days(startTime, pageRequest);
+        List<DebateByKeywordDTO> debates = new ArrayList<>();
+
+        // 새로운 TrendDebate 엔트리 삽입
+        for (Debate debate : debateList) {
+            TrendDebate trendDebate = TrendDebate.builder()
+                    .debate(debate)
+                    .updateAt(endTime) // 업데이트된 시간 저장
+                    .build();
+
+            trendDebateRepository.save(trendDebate);
+
+            debates.add(new DebateByKeywordDTO(debate.getTitle(), debate.getDebateId(), debate.getImageUrl(), debate.getHits(), (long) debate.getComment().size()));
+        }
+
+        return debates;
     }
 
 }

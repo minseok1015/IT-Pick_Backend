@@ -1,5 +1,6 @@
 package store.itpick.backend.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import store.itpick.backend.model.Debate;
 import store.itpick.backend.model.User;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,11 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
     void softDeleteById(@Param("debate_id") Long debate_id);
 
     Optional<Debate> getDebateByDebateId(Long debateId);
+
+    @Query("SELECT d FROM Debate d " +
+            "WHERE d.createAt >= :startTime " +
+            "ORDER BY d.hits DESC")
+    List<Debate> findTop3DebatesCreatedInLast3Days(@Param("startTime") Timestamp startTime, Pageable pageable);
 
 
 }
