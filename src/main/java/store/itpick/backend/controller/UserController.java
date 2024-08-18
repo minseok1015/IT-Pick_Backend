@@ -12,6 +12,8 @@ import store.itpick.backend.common.argument_resolver.PreAuthorize;
 import store.itpick.backend.common.exception.AuthException;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.dto.user.*;
+import store.itpick.backend.model.Alarm;
+import store.itpick.backend.service.AlarmService;
 import store.itpick.backend.service.S3ImageBucketService;
 import store.itpick.backend.service.UserService;
 
@@ -27,6 +29,7 @@ import static store.itpick.backend.util.BindingResultUtils.getErrorMessages;
 public class UserController {
 
     private final UserService userService;
+    private final AlarmService alarmService;
 
     private final S3ImageBucketService s3ImageBucketService;
 
@@ -136,6 +139,11 @@ public class UserController {
     @GetMapping("/involved-debate")
     public BaseResponse<List<GetMyPageResponse.InvolvedDebate>> getInvolvedDebate(@PreAuthorize long userId){
         return new BaseResponse<>(userService.getInvolvedDebate(userId));
+    }
+
+    @GetMapping("/alarm")
+    public BaseResponse<List<AlarmResponse>> getAlarm(@PreAuthorize long userId){
+        return new BaseResponse<>(alarmService.getAlarms(userId));
     }
 
 

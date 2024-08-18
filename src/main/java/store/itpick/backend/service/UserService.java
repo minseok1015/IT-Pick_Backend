@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.EMPTY_USER_VALUE;
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.NULL_USER_VALUE;
+import static store.itpick.backend.util.DateUtils.getTimeAgo;
 import static store.itpick.backend.util.UserUtils.getUser;
 
 @Slf4j
@@ -194,7 +195,7 @@ public class UserService {
         // 최근 순으로 정렬
         List<Debate> sortedDebates = myDebateList.stream()
                 .sorted((d1, d2) -> d2.getCreateAt().compareTo(d1.getCreateAt()))
-                .collect(Collectors.toList());
+                .toList();
 
         List<GetMyPageResponse.MyDebate> myDebateResponseList = new ArrayList<>();
 
@@ -226,7 +227,7 @@ public class UserService {
         // 최근 순으로 정렬
         List<Debate> sortedDebates = allDebates.stream()
                 .sorted((d1, d2) -> d2.getCreateAt().compareTo(d1.getCreateAt()))
-                .collect(Collectors.toList());
+                .toList();
 
         // 정렬된 Debate 리스트를 순회하면서 응답 리스트 생성
         for (Debate involvedDebate : sortedDebates) {
@@ -245,7 +246,6 @@ public class UserService {
 
 
 
-
     // 관심 주제 반환
     public List<String> getLikedTopicList(User user) {
         return user.getLikedTopics()
@@ -254,33 +254,8 @@ public class UserService {
                 .collect(Collectors.toList());  // List<String>으로 수집
     }
 
-    // 몇 분/시간/일 전인지 계산
 
-    public static String getTimeAgo(Timestamp createdAt) {
-        // 현재 시각을 LocalDateTime으로 변환
-        LocalDateTime now = LocalDateTime.now();
 
-        // Timestamp를 LocalDateTime으로 변환
-        LocalDateTime createdDateTime = createdAt.toLocalDateTime();
-
-        // 두 시각 간의 차이를 계산
-        Duration duration = Duration.between(createdDateTime, now);
-
-        // 경과된 시간에 따라 결과 문자열 생성
-        if (duration.toMinutes() < 1) {
-            return "방금 전";
-        }
-
-        if (duration.toMinutes() < 60) {
-            return duration.toMinutes() + "분 전";
-        }
-
-        if (duration.toHours() < 24) {
-            return duration.toHours() + "시간 전";
-        }
-
-        return duration.toDays() + "일 전";
-    }
 
 
     public String getProfileImgUrl(long userId) {
