@@ -32,13 +32,13 @@ public class DebateController {
     private final AlarmService alarmService;
 
     @PostMapping("")
-    public BaseResponse<PostDebateResponse> createDebate(@Valid @ModelAttribute PostDebateRequest postDebateRequest, BindingResult bindingResult) {
+    public BaseResponse<PostDebateResponse> createDebate(@PreAuthorize long userId, @Valid @ModelAttribute PostDebateRequest postDebateRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_DEBATE_VALUE, getErrorMessages(bindingResult));
         }
 
-        return new BaseResponse<>(debateService.createDebate(postDebateRequest));
+        return new BaseResponse<>(debateService.createDebate(postDebateRequest, userId));
     }
 
     @PostMapping("/comment")
@@ -47,54 +47,51 @@ public class DebateController {
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_COMMENT_VALUE, getErrorMessages(bindingResult));
         }
-        PostCommentResponse postCommentResponse = debateService.createComment(postCommentRequest);
+        PostCommentResponse postCommentResponse = debateService.createComment(postCommentRequest, userId);
         alarmService.createAlarmComment(postCommentResponse.getCommentId(),userId);
 
 
-        return new BaseResponse<>(debateService.createComment(postCommentRequest));
+        return new BaseResponse<>(debateService.createComment(postCommentRequest, userId));
     }
 
     @PostMapping("/comment/heart")
-    public BaseResponse<PostCommentHeartResponse> creatCommentHeart(@Valid @RequestBody PostCommentHeartRequest postCommentHeartRequest, BindingResult bindingResult) {
+    public BaseResponse<PostCommentHeartResponse> creatCommentHeart(@PreAuthorize long userId, @Valid @RequestBody PostCommentHeartRequest postCommentHeartRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_COMMENT_HEART_VALUE, getErrorMessages(bindingResult));
         }
 
-        return new BaseResponse<>(debateService.creatCommentHeart(postCommentHeartRequest));
+        return new BaseResponse<>(debateService.creatCommentHeart(postCommentHeartRequest, userId));
     }
 
     @PostMapping("/vote")
-    public BaseResponse<Object> creatUserVoteChoice(@Valid @RequestBody PostUserVoteChoiceRequest postUserVoteChoiceRequest, BindingResult bindingResult) {
+    public BaseResponse<Object> creatUserVoteChoice(@PreAuthorize long userId, @Valid @RequestBody PostUserVoteChoiceRequest postUserVoteChoiceRequest, BindingResult bindingResult) {
 
 
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_VOTE_VALUE, getErrorMessages(bindingResult));
         }
 
-        voteService.createUserVoteChoice(postUserVoteChoiceRequest);
+        voteService.createUserVoteChoice(postUserVoteChoiceRequest, userId);
 
         return new BaseResponse<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/vote")
-    public BaseResponse<Object> deleteUserVoteChoice(@Valid @RequestBody DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest, BindingResult bindingResult){
+    public BaseResponse<Object> deleteUserVoteChoice(@PreAuthorize long userId, @Valid @RequestBody DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_VOTE_DELETE_VALUE, getErrorMessages(bindingResult));
         }
 
-        voteService.deleteUserVoteChoice(deleteUserVoteChoiceRequest);
+        voteService.deleteUserVoteChoice(deleteUserVoteChoiceRequest, userId);
         return new BaseResponse<>(HttpStatus.OK);
     }
 
     @GetMapping("/details")
     public BaseResponse<GetDebateResponse> getDebate(
             @RequestParam Long debateId,
-            @RequestHeader("Authorization") String token) {
-
-        String jwtToken = token.substring(7);
-
-        GetDebateResponse debateResponse = debateService.getDebate(debateId, jwtToken);
+            @PreAuthorize long userId) {
+        GetDebateResponse debateResponse = debateService.getDebate(debateId, userId);
 
         return new BaseResponse<>(debateResponse);
     }
@@ -108,11 +105,8 @@ public class DebateController {
     }
 
     @GetMapping("/recent")
-    public BaseResponse<List<DebateByKeywordDTO>> getRecentViewedDebate(@RequestHeader("Authorization") String token) {
-
-        String jwtToken = token.substring(7);
-
-        List<DebateByKeywordDTO> debateResponse = debateService.getRecentViewedDebate(jwtToken);
+    public BaseResponse<List<DebateByKeywordDTO>> getRecentViewedDebate(@PreAuthorize long userId) {
+        List<DebateByKeywordDTO> debateResponse = debateService.getRecentViewedDebate(userId);
 
         return new BaseResponse<>(debateResponse);
     }

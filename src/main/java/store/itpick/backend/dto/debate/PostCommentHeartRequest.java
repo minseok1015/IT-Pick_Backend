@@ -15,6 +15,4 @@ public class PostCommentHeartRequest {
     @NotNull(message = "Comment ID는 필수입니다.")
     private Long commentId;
 
-    @NotNull(message = "User ID는 필수입니다.")
-    private Long userId;
 }
