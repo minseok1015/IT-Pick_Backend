@@ -43,6 +43,7 @@ public class VoteService {
                 .createAt(Timestamp.valueOf(LocalDateTime.now()))
                 .updateAt(Timestamp.valueOf(LocalDateTime.now()))
                 .debate(debate)
+                .multipleChoice(postVoteRequest.isMultipleChoice())
                 .build();
 
         vote = voteRepository.save(vote);
@@ -80,21 +81,35 @@ public class VoteService {
         User user = userRepository.findById(postUserVoteChoiceRequest.getUserId())
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        VoteOption voteOption = voteOptionRepository.findById(postUserVoteChoiceRequest.getVoteOptionId())
-                .orElseThrow(() -> new VoteException(VOTE_OPTION_NOT_FOUND));
+        List<VoteOption> voteOptions = voteOptionRepository.findAllById(postUserVoteChoiceRequest.getVoteOptionIds());
 
-        userVoteChoiceRepository.deleteByVoteOption_VoteAndUser(voteOption.getVote(), user);
+        if (voteOptions.isEmpty()) {
+            throw new VoteException(VOTE_OPTION_NOT_FOUND);
+        }
 
-        UserVoteChoice userVoteChoice = UserVoteChoice.builder()
-                .user(user)
-                .voteOption(voteOption)
-                .status("active")
-                .createAt(Timestamp.valueOf(LocalDateTime.now()))
-                .updateAt(Timestamp.valueOf(LocalDateTime.now()))
-                .build();
+        Vote vote = voteOptions.get(0).getVote();
 
-        userVoteChoiceRepository.save(userVoteChoice);
+        if (!vote.isMultipleChoice() && postUserVoteChoiceRequest.getVoteOptionIds().size() > 1) {
+            throw new VoteException(MULTIPLE_SELECTION_NOT_ALLOWED);
+        }
+
+         userVoteChoiceRepository.deleteByVoteOption_VoteAndUser(vote, user);
+
+
+        // 새로운 선택 저장
+        for (VoteOption voteOption : voteOptions) {
+            UserVoteChoice userVoteChoice = UserVoteChoice.builder()
+                    .user(user)
+                    .voteOption(voteOption)
+                    .status("active")
+                    .createAt(Timestamp.valueOf(LocalDateTime.now()))
+                    .updateAt(Timestamp.valueOf(LocalDateTime.now()))
+                    .build();
+
+            userVoteChoiceRepository.save(userVoteChoice);
+        }
     }
+
 
     @Transactional
     public void deleteUserVoteChoice(DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest){
@@ -102,15 +117,22 @@ public class VoteService {
         User user = userRepository.findById(deleteUserVoteChoiceRequest.getUserId())
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        VoteOption voteOption = voteOptionRepository.findById(deleteUserVoteChoiceRequest.getVoteOptionId())
-                .orElseThrow(() -> new VoteException(VOTE_OPTION_NOT_FOUND));
+        List<Long> voteOptionIds = deleteUserVoteChoiceRequest.getVoteOptionIds();
 
-        UserVoteChoice userVoteChoice = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
+        for (Long voteOptionId : voteOptionIds) {
+            VoteOption voteOption = voteOptionRepository.findById(voteOptionId)
+                    .orElseThrow(() -> new VoteException(VOTE_OPTION_NOT_FOUND));
 
-        if (userVoteChoice != null) {
-            userVoteChoiceRepository.delete(userVoteChoice);
-        } else {
-            throw new VoteException(USER_VOTE_CHOICE_NOT_FOUND);
+            List<UserVoteChoice> userVoteChoices = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
+
+            if (!userVoteChoices.isEmpty()) {
+                for (UserVoteChoice userVoteChoice : userVoteChoices) {
+                    userVoteChoiceRepository.delete(userVoteChoice);
+                }
+            } else {
+                throw new VoteException(USER_VOTE_CHOICE_NOT_FOUND);
+            }
         }
     }
+
 }

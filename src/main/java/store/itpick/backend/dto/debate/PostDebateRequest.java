@@ -31,5 +31,8 @@ public class PostDebateRequest {
     private MultipartFile imageFile;
 
     private List<VoteOptionRequest> voteOptions;
+
+    private boolean multipleChoice;
+
 }
 

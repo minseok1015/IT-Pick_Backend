@@ -29,6 +29,8 @@ public class GetDebateResponse {
     private List<CommentResponse> comments;
     private boolean userVoted;
     private String userVoteOptionText;
+    private String debateImgUrl;
+    private boolean multipleChoice;
 
     @Data
     @Builder

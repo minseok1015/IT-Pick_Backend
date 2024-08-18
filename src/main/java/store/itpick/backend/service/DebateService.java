@@ -66,6 +66,7 @@ public class DebateService {
         if (voteOptions != null && !voteOptions.isEmpty()) {
             PostVoteRequest postVoteRequest = new PostVoteRequest();
             postVoteRequest.setDebateId(debate.getDebateId());
+            postVoteRequest.setMultipleChoice(postDebateRequest.isMultipleChoice());
             voteService.createVote(postVoteRequest, postDebateRequest.getVoteOptions());
         }
 
@@ -164,10 +165,11 @@ public class DebateService {
         String userVoteOptionText = null;
 
         for (VoteOption voteOption : debate.getVote().getVoteOptions()) {
-            UserVoteChoice userVoteChoice = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
-            if (userVoteChoice != null) {
+            List<UserVoteChoice> userVoteChoices = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
+            if (!userVoteChoices.isEmpty()) {
                 userVoted = true;
-                userVoteOptionText = voteOption.getOptionText();
+                // 여러 선택지 중 첫 번째 선택된 옵션의 텍스트를 가져옴 (필요에 따라 조정 가능)
+                userVoteOptionText = userVoteChoices.get(0).getVoteOption().getOptionText();
                 break;
             }
         }
@@ -200,6 +202,8 @@ public class DebateService {
 
         return GetDebateResponse.builder()
                 .debateId(debate.getDebateId())
+                .debateImgUrl(debate.getImageUrl())
+                .multipleChoice(debate.getVote().isMultipleChoice())
                 .title(debate.getTitle())
                 .content(debate.getContent())
                 .hits(debate.getHits())
