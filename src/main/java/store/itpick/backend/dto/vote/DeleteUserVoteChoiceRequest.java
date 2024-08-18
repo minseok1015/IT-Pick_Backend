@@ -14,8 +14,6 @@ import java.util.List;
 @Builder
 public class DeleteUserVoteChoiceRequest {
 
-    @NotNull(message="User ID는 필수입니다.")
-    private Long userId;
 
     @NotNull(message = "Vote Option ID는 필수입니다.")
     private List<Long> voteOptionIds;

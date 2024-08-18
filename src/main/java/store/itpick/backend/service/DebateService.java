@@ -43,9 +43,9 @@ public class DebateService {
     private final RecentViewedDebateRepository recentViewedDebateRepository;
 
     @Transactional
-    public PostDebateResponse createDebate(PostDebateRequest postDebateRequest) {
+    public PostDebateResponse createDebate(PostDebateRequest postDebateRequest, long userId) {
 
-        User user = userRepository.findById(postDebateRequest.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
         Keyword keyword = keywordRepository.findById(postDebateRequest.getKeywordId())
@@ -74,7 +74,7 @@ public class DebateService {
     }
 
     @Transactional
-    public PostCommentResponse createComment(PostCommentRequest postCommentRequest) {
+    public PostCommentResponse createComment(PostCommentRequest postCommentRequest, long userId) {
 
         Optional<Debate> debateOptional = debateRepository.findById(postCommentRequest.getDebateId());
         if (!debateOptional.isPresent()) {
@@ -90,7 +90,7 @@ public class DebateService {
             } else throw new DebateException(COMMENT_PARENT_NOT_FOUND);
         }
 
-        Optional<User> userOptional = userRepository.findById(postCommentRequest.getUserId());
+        Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
             throw new AuthException(USER_NOT_FOUND);
         }
@@ -104,9 +104,9 @@ public class DebateService {
     }
 
     @Transactional
-    public PostCommentHeartResponse creatCommentHeart(PostCommentHeartRequest postCommentHeartRequest) {
+    public PostCommentHeartResponse creatCommentHeart(PostCommentHeartRequest postCommentHeartRequest, long userId) {
 
-        Optional<User> userOptional = userRepository.findById(postCommentHeartRequest.getUserId());
+        Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
             throw new AuthException(USER_NOT_FOUND);
         }
@@ -139,14 +139,7 @@ public class DebateService {
     }
 
     @Transactional
-    public GetDebateResponse getDebate(Long debateId, String token) {
-
-        if (jwtProvider.isExpiredToken(token)) {
-            throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
-
-        }
-
-        Long userId = jwtProvider.getUserIdFromToken(token);
+    public GetDebateResponse getDebate(Long debateId, long userId) {
 
         Debate debate = debateRepository.findById(debateId)
                 .orElseThrow(() -> new DebateException(DEBATE_NOT_FOUND));
@@ -260,12 +253,7 @@ public class DebateService {
         recentViewedDebateRepository.save(recentViewedDebate);
     }
 
-    public List<DebateByKeywordDTO> getRecentViewedDebate(String token){
-        if (jwtProvider.isExpiredToken(token)) {
-            throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
-        }
-
-        Long userId = jwtProvider.getUserIdFromToken(token);
+    public List<DebateByKeywordDTO> getRecentViewedDebate(long userId){
 
         List<RecentViewedDebate> recentViewedDebates = recentViewedDebateRepository.findByUser_UserIdOrderByViewedAtDesc(userId);
 

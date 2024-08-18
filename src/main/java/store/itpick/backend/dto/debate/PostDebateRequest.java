@@ -16,9 +16,6 @@ import java.util.List;
 @Builder
 public class PostDebateRequest {
 
-    @NotNull(message = "user ID는 필수입니다.")
-    private Long userId;
-
     @NotNull(message = "keyword ID는 필수입니다.")
     private Long keywordId;
 

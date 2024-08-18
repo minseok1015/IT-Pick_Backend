@@ -77,8 +77,8 @@ public class VoteService {
     }
 
     @Transactional
-    public void createUserVoteChoice(PostUserVoteChoiceRequest postUserVoteChoiceRequest) {
-        User user = userRepository.findById(postUserVoteChoiceRequest.getUserId())
+    public void createUserVoteChoice(PostUserVoteChoiceRequest postUserVoteChoiceRequest, long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
         List<VoteOption> voteOptions = voteOptionRepository.findAllById(postUserVoteChoiceRequest.getVoteOptionIds());
@@ -112,9 +112,9 @@ public class VoteService {
 
 
     @Transactional
-    public void deleteUserVoteChoice(DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest){
+    public void deleteUserVoteChoice(DeleteUserVoteChoiceRequest deleteUserVoteChoiceRequest, long userId){
 
-        User user = userRepository.findById(deleteUserVoteChoiceRequest.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
         List<Long> voteOptionIds = deleteUserVoteChoiceRequest.getVoteOptionIds();

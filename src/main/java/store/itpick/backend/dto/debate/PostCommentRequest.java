@@ -20,7 +20,5 @@ public class PostCommentRequest {
     private Long parentCommentId;
 
     private Long debateId;
-
-    private Long userId;
 }
 
