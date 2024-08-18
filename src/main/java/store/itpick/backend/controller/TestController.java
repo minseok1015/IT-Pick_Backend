@@ -73,7 +73,7 @@ public class TestController {
 
     @GetMapping("/save-day-total-manually")
     public String saveDayTotalManually() {
-        List<String> dateList = new ArrayList<>(Arrays.asList("240805", "240806", "240807", "240808", "240809", "240810", "240811", "240812", "240813", "240814", "240815", "240816", "240817"));
+        List<String> dateList = new ArrayList<>(Arrays.asList("240805", "240806", "240807", "240808", "240809", "240810", "240811", "240812", "240813", "240814", "240815", "240816", "240817", "240818"));
 
         for (String date : dateList) {
             if (!RankController.isValidatedDate(PeriodType.BY_DAY, date)) {
