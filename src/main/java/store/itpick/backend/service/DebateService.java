@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static store.itpick.backend.common.response.status.BaseExceptionResponseStatus.*;
 
@@ -39,6 +40,7 @@ public class DebateService {
     private final VoteService voteService;
     private final JwtProvider jwtProvider;
     private final S3ImageBucketService s3ImageBucketService;
+    private final RecentViewedDebateRepository recentViewedDebateRepository;
 
     @Transactional
     public PostDebateResponse createDebate(PostDebateRequest postDebateRequest) {
@@ -148,6 +150,11 @@ public class DebateService {
         Debate debate = debateRepository.findById(debateId)
                 .orElseThrow(() -> new DebateException(DEBATE_NOT_FOUND));
 
+
+        // 최근 본 토론 기록 생성 및 저장
+        saveRecentViewedDebate(userId, debate);
+
+
         debate.setHits(debate.getHits() + 1);
         debateRepository.save(debate);
 
@@ -224,7 +231,7 @@ public class DebateService {
         for (Debate debate : debates) {
             String title= debate.getTitle();
             String content =debate.getContent();
-            String mediaUrl =null;
+            String mediaUrl =debate.getImageUrl();
             Long hit = debate.getHits();
             Long comment = (long) debate.getComment().size();
             debateList.add(new DebateByKeywordDTO(title,content,mediaUrl,hit,comment));
@@ -233,4 +240,39 @@ public class DebateService {
         return debateList;
 
     }
+    private void saveRecentViewedDebate(Long userId, Debate debate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        RecentViewedDebate recentViewedDebate = new RecentViewedDebate();
+        recentViewedDebate.setUser(user);
+        recentViewedDebate.setDebate(debate);
+        recentViewedDebate.setViewedAt(new Timestamp(System.currentTimeMillis())); // 시청 시간을 저장
+
+        recentViewedDebateRepository.save(recentViewedDebate);
+    }
+
+    public List<DebateByKeywordDTO> getRecentViewedDebate(String token){
+        if (jwtProvider.isExpiredToken(token)) {
+            throw new JwtUnauthorizedTokenException(INVALID_TOKEN);
+        }
+
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        List<RecentViewedDebate> recentViewedDebates = recentViewedDebateRepository.findByUser_UserIdOrderByViewedAtDesc(userId);
+
+        // Debate ID를 통해 Debate 엔티티를 조회
+        List<Long> debateIds = recentViewedDebates.stream()
+                .map(recentViewedDebate -> recentViewedDebate.getDebate().getDebateId())
+                .collect(Collectors.toList());
+
+        List<Debate> debates = debateRepository.findAllById(debateIds);
+
+        // Debate를 DTO로 변환
+        return debates.stream()
+                .map(debate -> new DebateByKeywordDTO(debate.getTitle(), debate.getContent(), debate.getImageUrl(),debate.getHits(), (long) debate.getComment().size()))
+                .collect(Collectors.toList());
+
+    }
+
 }

@@ -100,4 +100,14 @@ public class DebateController {
 
         return new BaseResponse<>(debates);
     }
+
+    @GetMapping("/recent")
+    public BaseResponse<List<DebateByKeywordDTO>> getRecentViewedDebate(@RequestHeader("Authorization") String token) {
+
+        String jwtToken = token.substring(7);
+
+        List<DebateByKeywordDTO> debateResponse = debateService.getRecentViewedDebate(jwtToken);
+
+        return new BaseResponse<>(debateResponse);
+    }
 }
