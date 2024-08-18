@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import store.itpick.backend.common.argument_resolver.PreAuthorize;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.response.BaseResponse;
 import store.itpick.backend.dto.debate.*;
 import store.itpick.backend.dto.vote.DeleteUserVoteChoiceRequest;
 import store.itpick.backend.dto.vote.PostUserVoteChoiceRequest;
+import store.itpick.backend.service.AlarmService;
 import store.itpick.backend.service.DebateService;
 import store.itpick.backend.service.VoteService;
 
@@ -27,6 +29,7 @@ public class DebateController {
 
     private final DebateService debateService;
     private final VoteService voteService;
+    private final AlarmService alarmService;
 
     @PostMapping("")
     public BaseResponse<PostDebateResponse> createDebate(@Valid @ModelAttribute PostDebateRequest postDebateRequest, BindingResult bindingResult) {
@@ -39,11 +42,14 @@ public class DebateController {
     }
 
     @PostMapping("/comment")
-    public BaseResponse<PostCommentResponse> createComment(@Valid @RequestBody PostCommentRequest postCommentRequest, BindingResult bindingResult) {
+    public BaseResponse<PostCommentResponse> createComment(@PreAuthorize long userId, @Valid @RequestBody PostCommentRequest postCommentRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_COMMENT_VALUE, getErrorMessages(bindingResult));
         }
+        PostCommentResponse postCommentResponse = debateService.createComment(postCommentRequest);
+        alarmService.createAlarmComment(postCommentResponse.getCommentId(),userId);
+
 
         return new BaseResponse<>(debateService.createComment(postCommentRequest));
     }
