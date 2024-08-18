@@ -101,7 +101,7 @@ public class SeleniumService {
             System.out.println(searchLink);
         }
 
-        processKeywordsAndReferences("zum", keywordList, linksList);
+        processKeywordsAndReferences("zum", keywordList, linksList,"realtime");
 
 
 //        quitDriver();
@@ -137,7 +137,7 @@ public class SeleniumService {
         redis.saveRealtime(CommunityType.NAVER, PeriodType.BY_REAL_TIME, keywordList);
 
 
-        processKeywordsAndReferences("naver", keywordList, linksList);
+        processKeywordsAndReferences("naver", keywordList, linksList,"realtime");
 
         return null;
     }
@@ -191,7 +191,7 @@ public class SeleniumService {
             System.out.println(searchLink);
         }
 
-        processKeywordsAndReferences("nate", keywordList, linksList);
+        processKeywordsAndReferences("nate", keywordList, linksList,"realtime");
 
         return null;
     }
@@ -227,7 +227,7 @@ public class SeleniumService {
 
 
 
-        processKeywordsAndReferences("google", keywordList, linksList);
+        processKeywordsAndReferences("google", keywordList, linksList,"realtime");
 
         return null;
     }
@@ -317,7 +317,7 @@ public class SeleniumService {
     }
 
     @Transactional
-    public void processKeywordsAndReferences(String communityName, List<String> keywordList, List<String> linksList) {
+    public void processKeywordsAndReferences(String communityName, List<String> keywordList, List<String> linksList, String period) {
         List<Keyword> keywords = new ArrayList<>();
         List<Keyword> keywordsToUpdate = new ArrayList<>();
         List<Keyword> keywordsToSave = new ArrayList<>();
@@ -346,7 +346,7 @@ public class SeleniumService {
             } else {
                 CommunityPeriod newCommunityPeriod = new CommunityPeriod();
                 newCommunityPeriod.setCommunity(communityName);
-                newCommunityPeriod.setPeriod("realtime");
+                newCommunityPeriod.setPeriod(period);
                 finalCommunityPeriod = communityPeriodService.save(newCommunityPeriod);
             }
         } catch (DataIntegrityViolationException e) {
@@ -409,7 +409,7 @@ public class SeleniumService {
         return content;
     }
 
-    public List<Reference> saveReferenceForGoogle() throws IOException {
+    public List<Reference> saveReferenceForGoogle(String period) throws IOException {
 
         // 키워드 수집
         List<String> keywordList = new ArrayList<>();
@@ -432,11 +432,11 @@ public class SeleniumService {
 
 
 
-        processKeywordsAndReferences("google", keywordList, linksList);
+        processKeywordsAndReferences("google", keywordList, linksList,period);
 
         return null;
     }
-    public List<Reference> saveReferenceForNaver() throws IOException {
+    public List<Reference> saveReferenceForNaver(String period) throws IOException {
 
         // 키워드 수집
         List<String> keywordList = new ArrayList<>();
@@ -460,12 +460,12 @@ public class SeleniumService {
 
 
 
-        processKeywordsAndReferences("naver", keywordList, linksList);
+        processKeywordsAndReferences("naver", keywordList, linksList,period);
 
         return null;
     }
 
-    public List<Reference> saveReferenceForZum() throws IOException {
+    public List<Reference> saveReferenceForZum(String period) throws IOException {
 
         // 키워드 수집
         List<String> keywordList = new ArrayList<>();
@@ -486,13 +486,13 @@ public class SeleniumService {
             System.out.println(searchUrl);
         }
 
-        processKeywordsAndReferences("zum", keywordList, linksList);
+        processKeywordsAndReferences("zum", keywordList, linksList,period);
 
         return null;
     }
 
 
-    public List<Reference> saveReferenceForNate() throws IOException {
+    public List<Reference> saveReferenceForNate(String period) throws IOException {
 
         // 키워드 수집
         List<String> keywordList = new ArrayList<>();
@@ -517,11 +517,11 @@ public class SeleniumService {
 
 
 
-        processKeywordsAndReferences("google", keywordList, linksList);
+        processKeywordsAndReferences("nate", keywordList, linksList,period);
 
         return null;
     }
-    public List<Reference> saveReferenceForNamu() throws IOException {
+    public List<Reference> saveReferenceForNamu(String period) throws IOException {
 
         // 키워드 수집
         List<String> keywordList = new ArrayList<>();
@@ -545,7 +545,7 @@ public class SeleniumService {
 
 
 
-        processKeywordsAndReferences("google", keywordList, linksList);
+        processKeywordsAndReferences("namuwiki", keywordList, linksList,period);
 
         return null;
     }
@@ -645,7 +645,7 @@ public class SeleniumService {
             linksList.add(namuSearchUrl);
             System.out.println(namuSearchUrl);
         }
-        processKeywordsAndReferences("namuwiki", keywordList, linksList);
+        processKeywordsAndReferences("namuwiki", keywordList, linksList,"realtime");
 
         return null;
 

@@ -107,33 +107,33 @@ public class RankController {
     }
 
     @GetMapping("/insert/reference/naver")
-    public void insertReferenceNaver() throws IOException {
+    public void insertReferenceNaver(@RequestParam String period) throws IOException {
         seleniumService.initDriver();
-        seleniumService.saveReferenceForNaver();
+        seleniumService.saveReferenceForNaver(period);
         seleniumService.quitDriver();
     }
     @GetMapping("/insert/reference/zum")
-    public void insertReferenceZum() throws IOException {
+    public void insertReferenceZum(@RequestParam String period) throws IOException {
         seleniumService.initDriver();
-        seleniumService.saveReferenceForZum();
+        seleniumService.saveReferenceForZum(period);
         seleniumService.quitDriver();
     }
     @GetMapping("/insert/reference/nate")
-    public void insertReferenceNate() throws IOException {
+    public void insertReferenceNate(@RequestParam String period) throws IOException {
         seleniumService.initDriver();
-        seleniumService.saveReferenceForNate();
+        seleniumService.saveReferenceForNate(period);
         seleniumService.quitDriver();
     }
     @GetMapping("/insert/reference/google")
-    public void insertReferenceGoogle() throws IOException {
+    public void insertReferenceGoogle(@RequestParam String period) throws IOException {
         seleniumService.initDriver();
-        seleniumService.saveReferenceForGoogle();
+        seleniumService.saveReferenceForGoogle(period);
         seleniumService.quitDriver();
     }
     @GetMapping("/insert/reference/namuwiki")
-    public void insertReferenceNamuwiki() throws IOException {
+    public void insertReferenceNamuwiki(@RequestParam String period) throws IOException {
         seleniumService.initDriver();
-        seleniumService.saveReferenceForNamu();
+        seleniumService.saveReferenceForNamu(period);
         seleniumService.quitDriver();
     }
 
