@@ -194,6 +194,7 @@ public class UserService {
 
         // 최근 순으로 정렬
         List<Debate> sortedDebates = myDebateList.stream()
+                .filter(debate -> "active".equals(debate.getStatus()))
                 .sorted((d1, d2) -> d2.getCreateAt().compareTo(d1.getCreateAt()))
                 .toList();
 
@@ -205,6 +206,7 @@ public class UserService {
                     .keyword(myDebate.getKeyword().getKeyword())
                     .duration(getTimeAgo(myDebate.getCreateAt()))
                     .hits(myDebate.getHits())
+                    .debateId(myDebate.getDebateId())
                     .comments(debateRepository.countCommentsByDebate(myDebate))
                     .build()
             );
@@ -226,6 +228,7 @@ public class UserService {
 
         // 최근 순으로 정렬
         List<Debate> sortedDebates = allDebates.stream()
+                .filter(debate -> "active".equals(debate.getStatus()))
                 .sorted((d1, d2) -> d2.getCreateAt().compareTo(d1.getCreateAt()))
                 .toList();
 
@@ -236,6 +239,7 @@ public class UserService {
                     .keyword(involvedDebate.getKeyword().getKeyword())
                     .duration(getTimeAgo(involvedDebate.getCreateAt()))
                     .hits(involvedDebate.getHits())
+                    .debateId(involvedDebate.getDebateId())
                     .comments(debateRepository.countCommentsByDebate(involvedDebate))
                     .build()
             );

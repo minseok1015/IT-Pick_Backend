@@ -72,6 +72,8 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     COMMENT_NOT_FOUND(6005,HttpStatus.BAD_REQUEST.value(), "해당 댓글이 존재하지 않습니다."),
     KEYWORD_NOT_FOUND(6006,HttpStatus.BAD_REQUEST.value(), "해당 키워드가 존재하지 않습니다."),
     INVALID_GET_DEBATE_VALUE(6007,HttpStatus.BAD_REQUEST.value(), "토론 상세 정보 요청에서 잘못된 값이 존재합니다."),
+    INVALID_USER_ID(6008,HttpStatus.BAD_REQUEST.value(), "다른 유저의 토론을 지울 수 없습니다."),
+    DELETED_DEBATE(6009,HttpStatus.BAD_REQUEST.value(), "이미 삭제된 토론입니다."),
 
 
 

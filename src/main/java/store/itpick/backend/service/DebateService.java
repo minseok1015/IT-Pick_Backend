@@ -151,6 +151,8 @@ public class DebateService {
         Debate debate = debateRepository.findById(debateId)
                 .orElseThrow(() -> new DebateException(DEBATE_NOT_FOUND));
 
+        if(debate.getStatus().equals("deleted")) throw new DebateException(DEBATE_NOT_FOUND);
+
 
         // 최근 본 토론 기록 생성 및 저장
         saveRecentViewedDebate(userId, debate);
@@ -220,7 +222,7 @@ public class DebateService {
                 .userVoteOptionText(userVoteOptionText)
                 .build();
     }
-    
+
     @Transactional
     public List<DebateByKeywordDTO> GetDebatesByKeyword(Long keywordID, String sort){
         List<Debate> debates=null;
@@ -233,12 +235,14 @@ public class DebateService {
         List<DebateByKeywordDTO> debateList = new ArrayList<>();
 
         for (Debate debate : debates) {
-            String title= debate.getTitle();
-            String content =debate.getContent();
-            String mediaUrl =debate.getImageUrl();
-            Long hit = debate.getHits();
-            Long comment = (long) debate.getComment().size();
-            debateList.add(new DebateByKeywordDTO(title,content,mediaUrl,hit,comment));
+            if(debate.getStatus().equals("active")){
+                String title= debate.getTitle();
+                String content =debate.getContent();
+                String mediaUrl =debate.getImageUrl();
+                Long hit = debate.getHits();
+                Long comment = (long) debate.getComment().size();
+                debateList.add(new DebateByKeywordDTO(title,content,mediaUrl,hit,comment));
+            }
         }
 
         return debateList;
@@ -274,8 +278,31 @@ public class DebateService {
 
         // Debate를 DTO로 변환
         return debates.stream()
+                .filter(debate -> "active".equals(debate.getStatus()))
                 .map(debate -> new DebateByKeywordDTO(debate.getTitle(), debate.getContent(), debate.getImageUrl(),debate.getHits(), (long) debate.getComment().size()))
                 .collect(Collectors.toList());
+
+    }
+
+    @Transactional
+    public void deleteDebate(Long debateId, long userId) {
+        Optional<Debate> debate = debateRepository.getDebateByDebateId(debateId);
+
+        if (debate.isEmpty()) {
+            throw new DebateException(DEBATE_NOT_FOUND);
+        }
+
+        if (!debate.get().getUser().getUserId().equals(userId)) {
+            throw new DebateException(INVALID_USER_ID);
+        }
+
+        if(debate.get().getStatus().equals("deleted")){
+            throw new DebateException(DELETED_DEBATE);
+        }
+
+
+        debateRepository.softDeleteById(debateId);
+
 
     }
 
