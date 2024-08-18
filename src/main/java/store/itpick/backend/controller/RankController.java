@@ -1,5 +1,6 @@
 package store.itpick.backend.controller;
 
+import org.checkerframework.common.reflection.qual.GetMethod;
 import org.openqa.selenium.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import store.itpick.backend.util.Redis;
 import store.itpick.backend.service.RankService;
 import store.itpick.backend.service.SeleniumService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +105,39 @@ public class RankController {
 
         return new BaseResponse<>(rankResponse);
     }
+
+    @GetMapping("/insert/reference/naver")
+    public void insertReferenceNaver() throws IOException {
+        seleniumService.initDriver();
+        seleniumService.saveReferenceForNaver();
+        seleniumService.quitDriver();
+    }
+    @GetMapping("/insert/reference/zum")
+    public void insertReferenceZum() throws IOException {
+        seleniumService.initDriver();
+        seleniumService.saveReferenceForZum();
+        seleniumService.quitDriver();
+    }
+    @GetMapping("/insert/reference/nate")
+    public void insertReferenceNate() throws IOException {
+        seleniumService.initDriver();
+        seleniumService.saveReferenceForNate();
+        seleniumService.quitDriver();
+    }
+    @GetMapping("/insert/reference/google")
+    public void insertReferenceGoogle() throws IOException {
+        seleniumService.initDriver();
+        seleniumService.saveReferenceForGoogle();
+        seleniumService.quitDriver();
+    }
+    @GetMapping("/insert/reference/namuwiki")
+    public void insertReferenceNamuwiki() throws IOException {
+        seleniumService.initDriver();
+        seleniumService.saveReferenceForNamu();
+        seleniumService.quitDriver();
+    }
+
+
 
     @GetMapping("/update/naver")
     public void getUpdate() {

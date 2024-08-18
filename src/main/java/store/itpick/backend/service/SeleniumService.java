@@ -409,8 +409,146 @@ public class SeleniumService {
         return content;
     }
 
+    public List<Reference> saveReferenceForGoogle() throws IOException {
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+
+        /** redis에서 받아오기 **/
 
 
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String SearchUrl = null;
+            try {
+                SearchUrl = "https://www.google.com/search?q=" + URLEncoder.encode(keyword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(SearchUrl);
+            System.out.println(SearchUrl);
+        }
+
+
+
+        processKeywordsAndReferences("google", keywordList, linksList);
+
+        return null;
+    }
+    public List<Reference> saveReferenceForNaver() throws IOException {
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+
+        /** redis에서 받아오기 **/
+
+
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String SearchUrl = null;
+            try {
+                SearchUrl = "https://search.naver.com/search.naver?where=news&sm=tab_jum&query=" + URLEncoder.encode(keyword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(SearchUrl);
+            System.out.println(SearchUrl);
+        }
+
+
+
+        processKeywordsAndReferences("naver", keywordList, linksList);
+
+        return null;
+    }
+
+    public List<Reference> saveReferenceForZum() throws IOException {
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+
+        /** redis에서 받아오기 **/
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String searchUrl = null;
+            try {
+                searchUrl = "https://search.zum.com/search.zum?method=uni&option=accu&qm=g_real1.news&real1_id=7&query="
+                        + URLEncoder.encode(keyword, "UTF-8").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(searchUrl);
+            System.out.println(searchUrl);
+        }
+
+        processKeywordsAndReferences("zum", keywordList, linksList);
+
+        return null;
+    }
+
+
+    public List<Reference> saveReferenceForNate() throws IOException {
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+
+        /** redis에서 받아오기 **/
+
+
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String SearchUrl = null;
+            try {
+                SearchUrl = "https://m.news.nate.com/search?q="
+                        + URLEncoder.encode(keyword, "UTF-8").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(SearchUrl);
+            System.out.println(SearchUrl);
+        }
+
+
+
+        processKeywordsAndReferences("google", keywordList, linksList);
+
+        return null;
+    }
+    public List<Reference> saveReferenceForNamu() throws IOException {
+
+        // 키워드 수집
+        List<String> keywordList = new ArrayList<>();
+
+        /** redis에서 받아오기 **/
+
+
+
+        // 링크 수집
+        List<String> linksList = new ArrayList<>();
+        for (String keyword : keywordList) {
+            String SearchUrl = null;
+            try {
+                SearchUrl = "https://namu.wiki/w/" + URLEncoder.encode(keyword, "UTF-8").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            linksList.add(SearchUrl);
+            System.out.println(SearchUrl);
+        }
+
+
+
+        processKeywordsAndReferences("google", keywordList, linksList);
+
+        return null;
+    }
 
 
 

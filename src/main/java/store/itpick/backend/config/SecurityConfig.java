@@ -32,7 +32,7 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(withDefaults())  // CORS 설정 추가
+//                .cors(withDefaults())  // CORS 설정 추가
                 .formLogin(FormLoginConfigurer::disable)
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -49,6 +49,7 @@ public class SecurityConfig {
 //        config.addAllowedOrigin("https://itpick.netlify.app");
 //        config.addAllowedOrigin("http://localhost:3000");
 //        config.addAllowedOrigin("http://localhost:5173");
+//        config.addAllowedOrigin("https://itpick.vercel.app");
 //        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 //        config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "Accept", "X-Requested-With"));
 //        config.setExposedHeaders(Arrays.asList("Authorization", "location"));
