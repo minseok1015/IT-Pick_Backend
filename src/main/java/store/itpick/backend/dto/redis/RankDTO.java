@@ -10,8 +10,8 @@ import lombok.Getter;
 public class RankDTO {
     private String keyword;
     private long rank;
-    private long nateRank;
     private long naverRank;
+    private long nateRank;
     private long zumRank;
     private long googleRank;
     private long namuwikiRank;

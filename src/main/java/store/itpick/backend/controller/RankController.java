@@ -134,8 +134,6 @@ public class RankController {
         rankService.performWeeklyTasks();
     }
 
-
-
     @GetMapping("/naver")
     public List<Reference> getRankFromSignal() {
         String url = "https://www.signal.bz/";
@@ -174,24 +172,8 @@ public class RankController {
         return new BaseResponse<>(redis.getRankingBadgeResponse(keyword, periodType, date));
     }
 
-    @GetMapping("/day/test")
-    public void dayTest() {
-        redis.saveDay();
-    }
-
-    @GetMapping("/week/test")
-    public void weekTest() {
-        redis.saveWeek();
-    }
-
-    @GetMapping("/total/test")
-    public void totalTest() {
-        redis.saveTotalRanking(PeriodType.BY_REAL_TIME);
-        redis.saveTotalRanking(PeriodType.BY_DAY);
-        redis.saveTotalRanking(PeriodType.BY_WEEK);
-    }
-
-    private static boolean isValidatedDate(PeriodType periodType, String date) {
+//    private static boolean isValidatedDate(PeriodType periodType, String date) {
+    public static boolean isValidatedDate(PeriodType periodType, String date) {
         if (periodType == PeriodType.BY_REAL_TIME) {    // 무조건 통과
             return true;
         }
@@ -201,7 +183,8 @@ public class RankController {
         return false;
     }
 
-    private static CommunityType getCommunityType(String community) {
+//    private static CommunityType getCommunityType(String community) {
+    public static CommunityType getCommunityType(String community) {
         return switch (community) {
             case "naver" -> CommunityType.NAVER;
             case "nate" -> CommunityType.NATE;
@@ -213,7 +196,8 @@ public class RankController {
         };
     }
 
-    private static PeriodType getPeriodType(String period) {
+//    private static PeriodType getPeriodType(String period) {
+    public static PeriodType getPeriodType(String period) {
         return switch (period) {
             case "real_time" -> PeriodType.BY_REAL_TIME;
             case "day" -> PeriodType.BY_DAY;
@@ -221,11 +205,4 @@ public class RankController {
             default -> null;
         };
     }
-
-//    @GetMapping("/nate")
-//    public String getRankFromNate() {
-//        String url = "https://nate.com/";
-//
-//        return selenium.useDriverForMnate(url);
-//    }
 }

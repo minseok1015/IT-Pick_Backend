@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class RankListForKeyword {
-    private long nateRank;
     private long naverRank;
+    private long nateRank;
     private long zumRank;
     private long googleRank;
     private long namuwikiRank;
