@@ -1,5 +1,6 @@
 package store.itpick.backend.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import store.itpick.backend.common.argument_resolver.GetJwtHandlerArgumentResolver;
 import store.itpick.backend.common.argument_resolver.JwtAuthHandlerArgumentResolver;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
     private final JwtAuthInterceptor jwtAuthenticationInterceptor;
@@ -41,15 +43,16 @@ public class WebConfig implements WebMvcConfigurer {
 
 
 
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//                .allowedOrigins("http://localhost:3000", "http://localhost:5173", "https://localhost:5173", "https://itpick.netlify.app","https://itpick.vercel.app")
-//                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS")
-//                .exposedHeaders("location", "Authorization")
-//                .allowedHeaders("Content-Type", "Authorization", "X-Requested-With", "Accept")
-//                .allowCredentials(true);
-//    }
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        log.info("CorsMapping이 호출 되었습니다.");
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "http://localhost:5173", "https://localhost:5173", "https://itpick.netlify.app","https://itpick.vercel.app")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS")
+                .exposedHeaders("location", "Authorization")
+                .allowedHeaders("Content-Type", "Authorization", "X-Requested-With", "Accept")
+                .allowCredentials(true);
+    }
 
 
 
