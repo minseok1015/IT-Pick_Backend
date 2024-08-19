@@ -117,4 +117,12 @@ public class DebateController {
         debateService.deleteDebate(debateId,userId);
         return new BaseResponse<>(null);
     }
+
+
+    @GetMapping("/trend")
+    public BaseResponse<List<DebateByKeywordDTO>> getTrendDebate(){
+        List<DebateByKeywordDTO> debateResponse = debateService.getHotDebate();
+
+        return new BaseResponse<>(debateResponse);
+    }
 }

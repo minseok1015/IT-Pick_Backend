@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class DebateByKeywordDTO {
     String title;
-    String content;
+    Long debateId;
     String mediaUrl;
     Long hit;
     Long comment;
