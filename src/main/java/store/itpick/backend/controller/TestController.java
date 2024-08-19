@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.itpick.backend.model.rank.CommunityType;
 import store.itpick.backend.model.rank.PeriodType;
+import store.itpick.backend.service.AlarmService;
 import store.itpick.backend.service.DebateService;
 import store.itpick.backend.util.Redis;
 
@@ -21,6 +22,9 @@ public class TestController {
 
     @Autowired
     private DebateService debateService;
+
+    @Autowired
+    private AlarmService alarmService;
 
     @GetMapping("/*.ico")
     void pathMatch() {
@@ -46,7 +50,7 @@ public class TestController {
 
     @GetMapping("/trend")
     public void updateHotDebate(){
-        debateService.updateHotDebate();
+        alarmService.createAlarmTrend(debateService.updateHotDebate());
     }
 
     @GetMapping("/save-day-manually")
