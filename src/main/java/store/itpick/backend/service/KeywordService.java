@@ -280,7 +280,7 @@ public class KeywordService {
     }
 
     public List<SearchDTO> searchKeywordsWithBadge(String keyword) {
-        List<Keyword> keywordList= keywordRepository.findByKeywordStartingWithIgnoreCase(keyword);
+        List<Keyword> keywordList= keywordRepository.findByKeywordContainingIgnoreCase(keyword);
         List<String> keywords= new ArrayList<>();
         for (Keyword keyword1 : keywordList) {
             keywords.add(keyword1.getKeyword());
