@@ -44,5 +44,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
     /** 검색할때 사용하는 JPA **/
     List<Keyword> findByKeywordStartingWithIgnoreCase(String substring);
 
+    List<Keyword> findByKeywordContainingIgnoreCase(String substring);
+
 
 }
