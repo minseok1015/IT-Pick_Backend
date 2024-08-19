@@ -158,13 +158,15 @@ public class DebateService {
         boolean userVoted = false;
         String userVoteOptionText = null;
 
-        for (VoteOption voteOption : debate.getVote().getVoteOptions()) {
-            List<UserVoteChoice> userVoteChoices = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
-            if (!userVoteChoices.isEmpty()) {
-                userVoted = true;
-                // 여러 선택지 중 첫 번째 선택된 옵션의 텍스트를 가져옴 (필요에 따라 조정 가능)
-                userVoteOptionText = userVoteChoices.get(0).getVoteOption().getOptionText();
-                break;
+        // 투표가 존재할 경우, 사용자의 투표 여부 확인
+        if (debate.getVote() != null) {
+            for (VoteOption voteOption : debate.getVote().getVoteOptions()) {
+                List<UserVoteChoice> userVoteChoices = userVoteChoiceRepository.findByVoteOptionAndUser(voteOption, user);
+                if (!userVoteChoices.isEmpty()) {
+                    userVoted = true;
+                    userVoteOptionText = userVoteChoices.get(0).getVoteOption().getOptionText();
+                    break;
+                }
             }
         }
 
@@ -197,7 +199,7 @@ public class DebateService {
         return GetDebateResponse.builder()
                 .debateId(debate.getDebateId())
                 .debateImgUrl(debate.getImageUrl())
-                .multipleChoice(debate.getVote().isMultipleChoice())
+                .multipleChoice(debate.getVote() != null && debate.getVote().isMultipleChoice()) // Vote가 있을 경우만 처리
                 .title(debate.getTitle())
                 .content(debate.getContent())
                 .hits(debate.getHits())
