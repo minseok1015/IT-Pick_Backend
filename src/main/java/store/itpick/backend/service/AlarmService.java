@@ -34,6 +34,7 @@ public class AlarmService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final AlarmRepository alarmRepository;
+    private final DebateRepository debateRepository;
 
 
     @Transactional
@@ -63,6 +64,31 @@ public class AlarmService {
 
                 alarmRepository.save(alarm);
             } else throw new DebateException(COMMENT_PARENT_NOT_FOUND);
+        }
+    }
+
+
+    @Transactional
+    public void createAlarmTrend(List<Debate> trendDebateList) {
+        for (Debate trendDebate : trendDebateList) {
+
+            User user = trendDebate.getUser();
+            // Step 1: 알람의 수를 확인
+            Long alarmCount = alarmRepository.countByUser(user);
+
+            // Step 2: 알람이 30개 이상이면 오래된 알람 삭제
+            if (alarmCount >= 30) {
+                List<Alarm> alarms = alarmRepository.findByUserOrderByCreateAtAsc(user);
+                Alarm oldestAlarm = alarms.get(0); // 가장 오래된 알람
+                alarmRepository.delete(oldestAlarm);
+            }
+            //
+            Alarm alarm = Alarm.builder()
+                    .debate(trendDebate)
+                    .user(user)
+                    .createAt(Timestamp.valueOf(LocalDateTime.now()))
+                    .build();
+            alarmRepository.save(alarm);
         }
     }
 
