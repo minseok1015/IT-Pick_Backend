@@ -25,6 +25,7 @@ public class SchedulerService {
     private final SeleniumService seleniumService;
     private final KeywordService keywordService;
     private final DebateService debateService;
+    private final AlarmService alarmService;
     private final Redis redis;
 
 
@@ -150,7 +151,7 @@ public class SchedulerService {
 
     @Scheduled(cron = "0 30 * * * *")
     public void updateTrendDebate(){
-        debateService.updateHotDebate();
+        alarmService.createAlarmTrend(debateService.updateHotDebate());
     }
 
 }

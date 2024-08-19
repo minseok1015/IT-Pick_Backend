@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import store.itpick.backend.common.exception.DebateException;
 import store.itpick.backend.common.exception.AuthException;
 import store.itpick.backend.common.exception.UserException;
-import store.itpick.backend.common.exception.jwt.unauthorized.JwtInvalidTokenException;
-import store.itpick.backend.common.exception.jwt.unauthorized.JwtUnauthorizedTokenException;
 import store.itpick.backend.dto.debate.*;
-import store.itpick.backend.dto.keyword.SearchDTO;
 import store.itpick.backend.dto.vote.PostVoteRequest;
 import store.itpick.backend.jwt.JwtProvider;
 import store.itpick.backend.model.*;
@@ -297,12 +294,21 @@ public class DebateService {
     }
 
     @Transactional
-    public void updateHotDebate() {
+    public List<Debate> updateHotDebate() {
         // 현재 시간 및 48시간 전 시간 계산
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
         Timestamp startTime = new Timestamp(endTime.getTime() - 3 * 24 * 60 * 60 * 1000); // 3일 전 시간
         PageRequest pageRequest = PageRequest.of(0, 3); // 상위 3개만 가져오기
 
+        List<TrendDebate> trendDebateList = trendDebateRepository.findAll();
+        for(TrendDebate trendDebate : trendDebateList){
+            Optional<Debate> updateDebate = debateRepository.getDebateByDebateId(trendDebate.getTrendDebateId());
+            if (updateDebate.isPresent()) {
+                Debate debate = updateDebate.get();
+                debate.setOnTrend(false);
+                debateRepository.save(debate);
+            }
+        }
         // 기존의 TrendDebate 삭제
         trendDebateRepository.deleteAllInBatch();
 
@@ -316,9 +322,13 @@ public class DebateService {
                     .updateAt(endTime) // 업데이트된 시간 저장
                     .build();
 
+            debate.setOnTrend(true);
+            debateRepository.save(debate);
+
             trendDebateRepository.save(trendDebate);
 
         }
+        return debateList;
 
     }
 
