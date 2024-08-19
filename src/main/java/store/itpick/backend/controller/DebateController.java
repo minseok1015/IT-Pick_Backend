@@ -121,7 +121,7 @@ public class DebateController {
 
     @GetMapping("/trend")
     public BaseResponse<List<DebateByKeywordDTO>> getTrendDebate(){
-        List<DebateByKeywordDTO> debateResponse = debateService.updateHotDebate();
+        List<DebateByKeywordDTO> debateResponse = debateService.getHotDebate();
 
         return new BaseResponse<>(debateResponse);
     }

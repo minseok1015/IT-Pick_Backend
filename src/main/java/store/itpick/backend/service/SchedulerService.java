@@ -24,6 +24,7 @@ public class SchedulerService {
 
     private final SeleniumService seleniumService;
     private final KeywordService keywordService;
+    private final DebateService debateService;
     private final Redis redis;
 
 
@@ -145,6 +146,11 @@ public class SchedulerService {
 
 
         log.info("Weekly task completed.");
+    }
+
+    @Scheduled(cron = "0 30 * * * *")
+    public void updateTrendDebate(){
+        debateService.updateHotDebate();
     }
 
 }
