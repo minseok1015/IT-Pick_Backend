@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.itpick.backend.model.rank.CommunityType;
 import store.itpick.backend.model.rank.PeriodType;
+import store.itpick.backend.service.DebateService;
 import store.itpick.backend.util.Redis;
 
 import java.util.*;
@@ -17,6 +18,9 @@ public class TestController {
 
     @Autowired
     private Redis redis;
+
+    @Autowired
+    private DebateService debateService;
 
     @GetMapping("/*.ico")
     void pathMatch() {
@@ -38,6 +42,11 @@ public class TestController {
         redis.saveTotalRanking(PeriodType.BY_REAL_TIME);
         redis.saveTotalRanking(PeriodType.BY_DAY);
         redis.saveTotalRanking(PeriodType.BY_WEEK);
+    }
+
+    @GetMapping("/trend")
+    public void updateHotDebate(){
+        debateService.updateHotDebate();
     }
 
     @GetMapping("/save-day-manually")
