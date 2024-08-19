@@ -252,4 +252,17 @@ public class Redis {
         }
         return -1;
     }
+
+    public List<String> getKeywordListByRedisKey(String redisKey) {
+        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+
+        if (zSetOperations.size(redisKey) < 10) {
+            return null;
+        }
+        List<String> keywordList = new ArrayList<>();
+        for (Object keyword : zSetOperations.reverseRange(redisKey, 0, 9)) {
+            keywordList.add((String) keyword);
+        }
+        return keywordList;
+    }
 }
