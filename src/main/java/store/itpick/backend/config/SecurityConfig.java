@@ -31,28 +31,30 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
                 .cors(withDefaults())  // CORS 설정 추가
-                .formLogin(FormLoginConfigurer::disable)
+                .formLogin(FormLoginConfigurer::disable)  // 폼 로그인 비활성화
                 .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 세션 관리 정책 설정
                 );
+
 
         return http.build();
     }
 
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//        config.addAllowedOrigin("https://itpick.netlify.app");
-//        config.addAllowedOrigin("http://localhost:3000");
-//        config.addAllowedOrigin("http://localhost:5173");
-//        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-//        config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "Accept", "X-Requested-With"));
-//        config.setExposedHeaders(Arrays.asList("Authorization", "location"));
-//        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter(source);
-//    }
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("https://itpick.netlify.app");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("https://localhost:5173");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "Accept", "X-Requested-With"));
+        config.setExposedHeaders(Arrays.asList("Authorization", "location"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 }
