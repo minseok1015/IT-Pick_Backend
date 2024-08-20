@@ -9,10 +9,14 @@ import store.itpick.backend.model.Debate;
 import store.itpick.backend.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment,Long> {
     List<Comment> findByDebate(Debate debate);
     @Query("SELECT DISTINCT c.debate FROM Comment c WHERE c.user = :user")
     List<Debate> findDebatesByUserComments(@Param("user") User user);
+
+    List<Comment> findByUser_UserIdAndDebate_DebateIdAndComment(Long userId, Long debateId, String comment);
+
 }
