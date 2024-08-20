@@ -81,6 +81,12 @@ public class DebateService {
         }
         Debate debate = debateOptional.get();
 
+        // 유저 아이디, debateId, comment 내용이 동일한 댓글이 있는지 확인
+        List<Comment> existingComment = commentRepository.findByUser_UserIdAndDebate_DebateIdAndComment(userId, postCommentRequest.getDebateId(), postCommentRequest.getComment());
+        if (!existingComment.isEmpty()) {
+            throw new DebateException(DUPLICATE_COMMENT);
+        }
+
         Comment parentComment = null;
         if (postCommentRequest.getParentCommentId() != null) {
             Optional<Comment> parentCommentOptional = commentRepository.findById(postCommentRequest.getParentCommentId());

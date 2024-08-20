@@ -87,6 +87,7 @@ public enum BaseExceptionResponseStatus implements ResponseStatus {
     INVALID_VOTE_DELETE_VALUE(7003,HttpStatus.BAD_REQUEST.value(), "투표 취소 요청에서 잘못된 값이 존재합니다."),
     USER_VOTE_CHOICE_NOT_FOUND(7004,HttpStatus.BAD_REQUEST.value(), "투표하지 않았기 때문에 취소할 수 없습니다."),
     MULTIPLE_SELECTION_NOT_ALLOWED(7005,HttpStatus.BAD_REQUEST.value(), "복수 투표가 허용되지 않습니다."),
+    DUPLICATE_COMMENT(7006, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 댓글입니다."),
 
 
 
