@@ -29,6 +29,12 @@ public class DateUtils {
         return aWeekAgo.minusDays(diffFromMonday);
     }
 
+    public static LocalDate getMondayOfThisWeek() {
+        LocalDate thisWeek = LocalDate.now();
+        int diffFromMonday = thisWeek.getDayOfWeek().getValue() - 1;   // 월요일 0, 화요일 1, ..., 일요일 6
+        return thisWeek.minusDays(diffFromMonday);
+    }
+
     public static LocalDate stringToLocalDate(String date) {
         int year = Integer.parseInt("20" + date.substring(0, 2));
         int month = Integer.parseInt(date.substring(2, 4));

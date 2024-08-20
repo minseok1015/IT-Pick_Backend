@@ -61,10 +61,11 @@ public class Redis {
     public void saveWeek() {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
 
-        LocalDate mondayOfPreviousWeek = DateUtils.getMondayOfPreviousWeek();   // 지난주 월요일
+//        LocalDate mondayOfPreviousWeek = DateUtils.getMondayOfPreviousWeek();   // 지난주 월요일
+        LocalDate mondayOfPreviousWeek = DateUtils.getMondayOfThisWeek();   // 이번주 월요일
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyMMdd");
         List<List<String>> dayKeyListOfPreviousWeek = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 2; i++) {   // 월, 화만
             LocalDate dayOfPreviousWeek = mondayOfPreviousWeek.plusDays(i); // 지난주 월요일부터 일요일까지
 
             // 해당 날짜의 모든 커뮤니티의 키를 담고 있는 리스트
@@ -97,7 +98,8 @@ public class Redis {
         String date = switch (periodType) {
             case BY_REAL_TIME -> "not needed";
             case BY_DAY -> DateUtils.localDateToString(LocalDate.now());
-            case BY_WEEK -> DateUtils.localDateToString(DateUtils.getMondayOfPreviousWeek());
+//            case BY_WEEK -> DateUtils.localDateToString(DateUtils.getMondayOfPreviousWeek());
+            case BY_WEEK -> DateUtils.localDateToString(DateUtils.getMondayOfThisWeek());
         };
         String totalKey = makeKey(CommunityType.TOTAL, periodType, date);
         redisTemplate.delete(totalKey); // (혹시 존재했을지 모르는) 기존 키 삭제
