@@ -48,7 +48,7 @@ public class Debate {
     @OneToOne(mappedBy = "debate", cascade = CascadeType.ALL)
     private Vote vote;
 
-    @OneToMany(mappedBy = "debate")
+    @OneToMany(mappedBy = "debate", cascade = CascadeType.ALL)
     private List<Comment> comment;
 
     @ManyToOne
