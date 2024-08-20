@@ -12,6 +12,7 @@ import store.itpick.backend.dto.debate.DebateByKeywordDTO;
 import store.itpick.backend.dto.keyword.SearchDTO;
 import store.itpick.backend.dto.debate.DebateByKeywordDTO;
 import store.itpick.backend.model.Keyword;
+import store.itpick.backend.repository.KeywordRepository;
 import store.itpick.backend.service.KeywordService;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import static store.itpick.backend.common.response.status.BaseExceptionResponseS
 public class KeywordController {
 
     private final KeywordService keywordService;
+    private final KeywordRepository keywordRepository;
 
     @GetMapping("/search/nobadge")
     public BaseResponse<List<String>> searchKeywords(@RequestParam String query) {
@@ -41,6 +43,14 @@ public class KeywordController {
             throw new KeywordException(NO_SEARCH_KEYWORD);
         }
         return new BaseResponse<>(keywords);
+    }
+
+    @GetMapping("")
+    public BaseResponse<String> getKeyword(@RequestParam Long keywordId) {
+
+
+        Keyword keyword =keywordRepository.getById(keywordId);
+        return new BaseResponse<>(keyword.getKeyword());
     }
 
 
