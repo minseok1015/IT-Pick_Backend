@@ -76,16 +76,9 @@ public class DebateService {
     public PostCommentResponse createComment(PostCommentRequest postCommentRequest, long userId) {
 
         Optional<Debate> debateOptional = debateRepository.findById(postCommentRequest.getDebateId());
-        if (!debateOptional.isPresent()) {
-            throw new DebateException(DEBATE_NOT_FOUND);
-        }
+
         Debate debate = debateOptional.get();
 
-        // 유저 아이디, debateId, comment 내용이 동일한 댓글이 있는지 확인
-        List<Comment> existingComment = commentRepository.findByUser_UserIdAndDebate_DebateIdAndComment(userId, postCommentRequest.getDebateId(), postCommentRequest.getComment());
-        if (!existingComment.isEmpty()) {
-            throw new DebateException(DUPLICATE_COMMENT);
-        }
 
         Comment parentComment = null;
         if (postCommentRequest.getParentCommentId() != null) {
@@ -276,6 +269,24 @@ public class DebateService {
                 .filter(debate -> "active".equals(debate.getStatus()))
                 .map(debate -> new DebateByKeywordDTO(debate.getTitle(), debate.getDebateId(), debate.getImageUrl(),debate.getHits(), (long) debate.getComment().size()))
                 .collect(Collectors.toList());
+
+    }
+
+
+    public void validateCreateComment(PostCommentRequest postCommentRequest, long userId) {
+
+        Optional<Debate> debateOptional = debateRepository.findById(postCommentRequest.getDebateId());
+        if (!debateOptional.isPresent()) {
+            throw new DebateException(DEBATE_NOT_FOUND);
+        }
+
+        // 유저 아이디, debateId, comment 내용이 동일한 댓글이 있는지 확인
+        List<Comment> existingComment = commentRepository.findByUser_UserIdAndDebate_DebateIdAndComment(userId, postCommentRequest.getDebateId(), postCommentRequest.getComment());
+        if (!existingComment.isEmpty()) {
+            log.info("test" + existingComment.toString());
+            log.info("test");
+            throw new DebateException(DUPLICATE_COMMENT);
+        }
 
     }
 
