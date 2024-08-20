@@ -1,10 +1,7 @@
 package store.itpick.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -36,10 +33,12 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "debate_id", nullable = false)
+    @ToString.Exclude
     private Debate debate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)

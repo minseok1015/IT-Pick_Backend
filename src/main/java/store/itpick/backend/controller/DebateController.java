@@ -47,6 +47,7 @@ public class DebateController {
         if (bindingResult.hasErrors()) {
             throw new DebateException(INVALID_COMMENT_VALUE, getErrorMessages(bindingResult));
         }
+        debateService.validateCreateComment(postCommentRequest, userId);
         PostCommentResponse postCommentResponse = debateService.createComment(postCommentRequest, userId);
         alarmService.createAlarmComment(postCommentResponse.getCommentId(),userId);
 
